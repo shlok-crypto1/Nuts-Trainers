@@ -1,0 +1,547 @@
+<meta charset="utf-8">
+<title>Nuts Trainer — Hold'em Board Reading</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0f1512; --felt:#14231b; --felt2:#183025; --line:#26473a;
+    --ink:#e8f0ea; --dim:#8fb0a0; --accent:#3ad19a; --accentd:#1f7a5a;
+    --good:#39d98a; --goodbg:#123726; --bad:#ff6b6b; --badbg:#3a1616;
+    --cardbg:#fbfdfb; --red:#d8143a; --blk:#161a18;
+    --btn:#1c3428; --btnh:#244534;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(120% 90% at 50% -10%, #1b3327 0%, var(--bg) 60%);
+    color:var(--ink); font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh; padding:18px 14px 40px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:20px;margin:0;letter-spacing:.3px}
+  .sub{color:var(--dim);font-size:12.5px;margin-top:2px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .settings{margin:16px 0 4px;display:flex;flex-direction:column;gap:8px}
+  .segrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .seglabel{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;min-width:66px}
+  .seg{display:inline-flex;background:#0d1a14;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{background:transparent;color:var(--dim);border:0;padding:6px 11px;font:600 12.5px/1 inherit;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--accentd);color:#eafff5}
+  .seg button:hover:not(.on){background:#12241a;color:var(--ink)}
+  .tierhint{color:var(--dim);font-size:12px;min-height:16px}
+  .panel{background:linear-gradient(180deg,var(--felt) 0%, var(--felt2) 100%);
+    border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin-top:14px;
+    box-shadow:inset 0 1px 0 #ffffff10, 0 8px 30px #0006}
+  .street{text-align:center;color:var(--accent);font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase}
+  .board{display:flex;justify-content:center;gap:9px;margin:12px 0 4px;flex-wrap:wrap}
+  .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--cardbg);border-radius:9px;font-weight:800;line-height:1;
+    box-shadow:0 2px 6px #0007; user-select:none}
+  .card.big{width:58px;height:80px}
+  .card.big .r{font-size:22px} .card.big .s{font-size:24px;margin-top:3px}
+  .card.sm{width:40px;height:54px}
+  .card.sm .r{font-size:15px} .card.sm .s{font-size:17px;margin-top:2px}
+  .card.red{color:var(--red)} .card.blk{color:var(--blk)}
+  .ask{text-align:center;color:var(--dim);margin:12px 0 4px;font-size:13.5px}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .opt{display:flex;align-items:center;gap:12px;background:var(--btn);border:1.5px solid var(--line);
+    border-radius:12px;padding:12px 14px;cursor:pointer;transition:.08s;text-align:left}
+  .opt:hover:not(.dis){background:var(--btnh);border-color:var(--accentd)}
+  .opt.dis{cursor:default}
+  .opt .key{width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;
+    border-radius:6px;background:#0d1a14;border:1px solid var(--line);font-weight:700;font-size:12.5px;color:var(--dim)}
+  .opt .cards{display:flex;gap:6px}
+  .opt.correct{background:var(--goodbg);border-color:var(--good)}
+  .opt.wrong{background:var(--badbg);border-color:var(--bad)}
+  .opt.correct .key{color:var(--good);border-color:var(--good)}
+  .opt.wrong .key{color:var(--bad);border-color:var(--bad)}
+  .feedback{margin-top:14px;min-height:52px;border-radius:12px;padding:12px 14px;border:1px solid transparent}
+  .feedback.show.ok{background:var(--goodbg);border-color:#2b6b4c}
+  .feedback.show.no{background:var(--badbg);border-color:#7a3030}
+  .fb-head{font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .fb-reason{color:var(--ink);margin-top:6px;font-size:13.5px;opacity:.92}
+  .nexthint{text-align:center;color:var(--dim);font-size:12px;margin-top:10px;height:16px}
+  .stats{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .stat{flex:1;min-width:84px;background:#0d1a14;border:1px solid var(--line);border-radius:11px;padding:9px 10px;text-align:center}
+  .stat b{display:block;font-size:19px} .stat span{color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px}
+  .row-actions{display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--dim);padding:7px 14px;border-radius:9px;cursor:pointer;font:600 12.5px inherit}
+  .ghost:hover{color:var(--ink);border-color:var(--accentd)}
+  .badge{font-size:11.5px;border:1px solid var(--line);border-radius:20px;padding:4px 10px;color:var(--dim);cursor:pointer;white-space:nowrap}
+  .badge.pass{color:var(--good);border-color:#2b6b4c}
+  .badge.fail{color:var(--bad);border-color:#7a3030}
+  #testDetail{display:none;margin-top:8px;font-size:12px;color:var(--dim);background:#0d1a14;border:1px solid var(--line);border-radius:10px;padding:10px}
+  #testDetail div{padding:2px 0}
+  .overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+  .overlay.show{display:flex}
+  .modal{background:var(--felt2);border:1px solid var(--line);border-radius:16px;max-width:520px;width:100%;padding:22px;max-height:88vh;overflow:auto}
+  .modal h2{margin:0 0 4px}
+  .miss{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+  .miss .lab{color:var(--dim);font-size:12px;min-width:74px}
+  .pill{display:inline-block;font-size:11px;color:var(--accent);border:1px solid var(--accentd);border-radius:20px;padding:2px 8px}
+  kbd{background:#0d1a14;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font:600 11px inherit;color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>♠ Nuts Trainer <span style="color:var(--red)">♥</span></h1>
+      <div class="sub">Read the board. Pick the best possible hand.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="testBadge" class="badge">running tests…</span>
+      <button class="ghost" id="endBtn">End session</button>
+    </div>
+  </div>
+  <div id="testDetail"></div>
+
+  <div class="settings">
+    <div class="segrow">
+      <span class="seglabel">Difficulty</span>
+      <div class="seg" id="tierSeg">
+        <button data-t="1">L1 Dry</button>
+        <button data-t="2">L2 Straighty</button>
+        <button data-t="3">L3 Flush/Paired</button>
+        <button data-t="4">L4 Nasty</button>
+        <button data-t="0">Mixed</button>
+      </div>
+    </div>
+    <div class="tierhint" id="tierHint"></div>
+    <div class="segrow">
+      <span class="seglabel">Street</span>
+      <div class="seg" id="streetSeg">
+        <button data-s="all">All</button>
+        <button data-s="flop">Flop</button>
+        <button data-s="turn">Turn</button>
+        <button data-s="river">River</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="table">
+    <div class="street" id="streetLbl">—</div>
+    <div class="board" id="board"></div>
+    <div class="ask">What are <b>the nuts</b>?</div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="nexthint" id="nextHint"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="sRounds">0</b><span>Rounds</span></div>
+    <div class="stat"><b id="sAcc">—</b><span>Accuracy</span></div>
+    <div class="stat"><b id="sStreak">0</b><span>Streak</span></div>
+    <div class="stat"><b id="sBest">0</b><span>Best</span></div>
+    <div class="stat"><b id="sDiff">—</b><span>Distractor diff</span></div>
+  </div>
+  <div class="row-actions">
+    <span style="color:var(--dim);font-size:12px;align-self:center">
+      <kbd>1</kbd>–<kbd>4</kbd> answer &nbsp;·&nbsp; <kbd>Enter</kbd> next round
+    </span>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>Session summary</h2>
+    <div class="sub" id="sumLine"></div>
+    <div id="sumMiss" style="margin-top:14px"></div>
+    <div class="row-actions" style="justify-content:flex-end;margin-top:18px">
+      <button class="ghost" id="closeSum">Close</button>
+      <button class="ghost" id="newSession" style="border-color:var(--accentd);color:var(--accent)">New session</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   CORE ENGINE  — poker hand evaluation + nut solver.
+   This is the part that MUST be correct. Unit tests live at the bottom.
+   Card = {rank:2..14 (A=14), suit:0..3, id}.  Suits: 0♠ 1♥ 2♦ 3♣.
+   ========================================================================= */
+const RANKNAME={14:'A',13:'K',12:'Q',11:'J',10:'10',9:'9',8:'8',7:'7',6:'6',5:'5',4:'4',3:'3',2:'2'};
+const SUITSYM=['♠','♥','♦','♣'];
+const SUITNAME=['spades','hearts','diamonds','clubs'];
+const CATNAME=['high card','one pair','two pair','three of a kind','straight','flush','full house','four of a kind','straight flush'];
+
+const DECK=[];
+for(let r=2;r<=14;r++) for(let s=0;s<4;s++) DECK.push({rank:r,suit:s,id:r*4+s});
+
+function parseCard(str){ // 'As','Td','9h','Ks'
+  const rc=str.slice(0,-1), sc=str.slice(-1).toLowerCase();
+  const rmap={A:14,K:13,Q:12,J:11,T:10}; const smap={s:0,h:1,d:2,c:3};
+  const rank=rmap[rc.toUpperCase()]!==undefined?rmap[rc.toUpperCase()]:parseInt(rc,10);
+  const suit=smap[sc];
+  return {rank,suit,id:rank*4+suit};
+}
+function parseCards(arr){return arr.map(parseCard);}
+
+// all k-index combinations of n, memoized for the sizes we use (5-of-6, 5-of-7)
+const _comboMemo={};
+function kCombos(n,k){
+  const key=n+'-'+k; if(_comboMemo[key]) return _comboMemo[key];
+  const out=[]; const c=[];
+  (function rec(start,d){
+    if(d===k){out.push(c.slice());return;}
+    for(let i=start;i<n;i++){c.push(i);rec(i+1,d+1);c.pop();}
+  })(0,0);
+  return _comboMemo[key]=out;
+}
+
+// Evaluate exactly 5 cards -> comparable array [category, tiebreakers...].
+// Higher array (lexicographically) = better hand.
+function evaluate5(cards){
+  const ranks=cards.map(c=>c.rank);
+  const suits=cards.map(c=>c.suit);
+  const isFlush=suits.every(s=>s===suits[0]);
+  const cnt={};
+  for(const r of ranks) cnt[r]=(cnt[r]||0)+1;
+  const groups=Object.keys(cnt).map(r=>({rank:+r,count:cnt[r]}))
+    .sort((a,b)=> b.count-a.count || b.rank-a.rank);
+  // straight (Ace counts high AND low for the wheel)
+  const rset=new Set(ranks); if(rset.has(14)) rset.add(1);
+  let straightHigh=0;
+  for(let hi=14;hi>=5;hi--){
+    let ok=true;
+    for(let k=0;k<5;k++){ if(!rset.has(hi-k)){ok=false;break;} }
+    if(ok){straightHigh=hi;break;}
+  }
+  const descRanks=[...ranks].sort((a,b)=>b-a);
+  if(isFlush && straightHigh) return [8, straightHigh];
+  if(groups[0].count===4) return [7, groups[0].rank, groups[1].rank];
+  if(groups[0].count===3 && groups[1] && groups[1].count>=2) return [6, groups[0].rank, groups[1].rank];
+  if(isFlush) return [5, ...descRanks];
+  if(straightHigh) return [4, straightHigh];
+  if(groups[0].count===3) return [3, groups[0].rank, ...groups.slice(1).map(g=>g.rank)];
+  if(groups[0].count===2 && groups[1] && groups[1].count===2){
+    const p=[groups[0].rank,groups[1].rank].sort((a,b)=>b-a);
+    return [2, p[0], p[1], groups[2].rank];
+  }
+  if(groups[0].count===2) return [1, groups[0].rank, ...groups.slice(1).map(g=>g.rank)];
+  return [0, ...descRanks];
+}
+function compareValue(a,b){
+  const n=Math.max(a.length,b.length);
+  for(let i=0;i<n;i++){ const d=(a[i]||0)-(b[i]||0); if(d) return d<0?-1:1; }
+  return 0;
+}
+// Best 5-card hand out of 5..7 cards.
+function evaluateBest(cards){
+  if(cards.length<=5) return {value:evaluate5(cards), best5:cards};
+  let best=null,bestCards=null;
+  for(const combo of kCombos(cards.length,5)){
+    const five=combo.map(i=>cards[i]);
+    const v=evaluate5(five);
+    if(best===null||compareValue(v,best)>0){best=v;bestCards=five;}
+  }
+  return {value:best,best5:bestCards};
+}
+
+// --- Nut solver: brute force every possible 2-card holding vs the board. ---
+function usedCount(e){
+  const ids=new Set(e.best5.map(c=>c.id));
+  return (ids.has(e.hole[0].id)?1:0)+(ids.has(e.hole[1].id)?1:0);
+}
+function holeRanksDesc(e){return [e.hole[0].rank,e.hole[1].rank].sort((a,b)=>b-a);}
+// Which of two equal-value holdings makes the "cleaner" representative:
+// prefer both cards actually used, then higher hole cards.
+function repBetter(a,b){
+  const ua=usedCount(a),ub=usedCount(b); if(ua!==ub) return ua>ub;
+  const ra=holeRanksDesc(a),rb=holeRanksDesc(b);
+  if(ra[0]!==rb[0]) return ra[0]>rb[0];
+  if(ra[1]!==rb[1]) return ra[1]>rb[1];
+  return false;
+}
+function solveNuts(board){
+  const used=new Set(board.map(c=>c.id));
+  const unseen=DECK.filter(c=>!used.has(c.id));
+  let maxV=null; const entries=[];
+  for(let i=0;i<unseen.length;i++) for(let j=i+1;j<unseen.length;j++){
+    const hole=[unseen[i],unseen[j]];
+    const r=evaluateBest(board.concat(hole));
+    const e={hole,value:r.value,best5:r.best5};
+    entries.push(e);
+    if(maxV===null||compareValue(r.value,maxV)>0) maxV=r.value;
+  }
+  let correct=null;
+  for(const e of entries) if(compareValue(e.value,maxV)===0){ if(!correct||repBetter(e,correct)) correct=e; }
+  // one representative holding per DISTINCT sub-nut hand strength
+  const map=new Map();
+  for(const e of entries){
+    if(compareValue(e.value,maxV)<0){
+      const k=e.value.join(',');
+      const cur=map.get(k);
+      if(!cur||repBetter(e,cur)) map.set(k,e);
+    }
+  }
+  const distinct=[...map.values()].sort((a,b)=>compareValue(b.value,a.value));
+  return {maxV,correct,distinct};
+}
+
+/* =========================================================================
+   BOARD TEXTURE + DIFFICULTY TIERS
+   Tiers gate which boards get dealt, based on what's POSSIBLE right now.
+   ========================================================================= */
+function classify(board){
+  const suitCounts=[0,0,0,0], rc={};
+  for(const c of board){ suitCounts[c.suit]++; rc[c.rank]=(rc[c.rank]||0)+1; }
+  const maxSuit=Math.max(...suitCounts);
+  const counts=Object.values(rc).sort((a,b)=>b-a);
+  const paired=counts[0]>=2, trips=counts[0]>=3;
+  const twoPairPlus=counts.filter(x=>x>=2).length>=2 || trips;
+  const flushPossible=maxSuit>=3;
+  const rset=new Set(board.map(c=>c.rank)); if(rset.has(14)) rset.add(1);
+  let maxWin=0;
+  for(let lo=1;lo<=10;lo++){ let n=0; for(let r=lo;r<=lo+4;r++) if(rset.has(r)) n++; if(n>maxWin) maxWin=n; }
+  return {maxSuit,paired,trips,twoPairPlus,flushPossible,maxWin,
+          straightMade:maxWin>=5, straightHeavy:maxWin>=4};
+}
+function tierAccept(tier,f){
+  switch(tier){
+    case 1: return !f.flushPossible && !f.paired && f.maxWin<=2;          // dry
+    case 2: return !f.flushPossible && !f.paired && f.maxWin>=3;          // coordinated, no flush
+    case 3: return (((f.flushPossible?1:0)+(f.paired?1:0))===1)          // exactly one threat
+                   && !f.twoPairPlus
+                   && !(f.flushPossible&&f.straightHeavy)
+                   && !(f.paired&&f.straightHeavy);
+    case 4: return (f.flushPossible&&f.paired) || f.twoPairPlus          // multi-threat monsters
+                   || (f.flushPossible&&f.straightHeavy) || (f.paired&&f.straightHeavy);
+    default: return true;                                                // Mixed
+  }
+}
+const TIER_HINT={
+  1:'Dry boards — rainbow-ish, unpaired, uncoordinated. The nuts is almost always the top set.',
+  2:'Coordinated but no flush possible. A straight is often the nuts — read WHICH straight.',
+  3:'One advanced threat: either a flush is possible, or the board is paired. Boats & nut flushes appear.',
+  4:'Multi-threat monsters: flush+paired, double-paired, straight+flush. The nuts is often a surprise.',
+  0:'Mixed — every texture from dry to nasty.'
+};
+
+/* =========================================================================
+   DISTRACTORS — sub-nut holdings, closeness scales with recent accuracy.
+   ========================================================================= */
+function pickDistractors(distinct,c,k=3){
+  const m=distinct.length;
+  if(m<=k) return distinct.slice(0,k);
+  const target=(1-c)*(m-1);        // high closeness -> aim at the near-misses (index 0)
+  const spread=Math.max(1.2,m*0.18);
+  const w=distinct.map((_,i)=>Math.exp(-Math.abs(i-target)/spread));
+  const pool=[...distinct.keys()], chosen=[];
+  for(let n=0;n<k;n++){
+    let sum=0; for(const p of pool) sum+=w[p];
+    let x=Math.random()*sum, pi=0;
+    for(let t=0;t<pool.length;t++){ x-=w[pool[t]]; if(x<=0){pi=t;break;} pi=t; }
+    chosen.push(distinct[pool[pi]]); pool.splice(pi,1);
+  }
+  return chosen;
+}
+
+/* =========================================================================
+   REASONING — one-line "why it's the nuts".
+   ========================================================================= */
+function flushSuitOf(board){
+  const sc=[0,0,0,0]; for(const c of board) sc[c.suit]++;
+  for(let s=0;s<4;s++) if(sc[s]>=3) return s; return -1;
+}
+function rn(r){return RANKNAME[r];}
+function describeNuts(board,f,value){
+  const cat=value[0];
+  switch(cat){
+    case 8:
+      return value[1]===14 ? 'Royal flush — the absolute, unbeatable nuts.'
+        : `Straight flush, ${rn(value[1])}-high — nothing beats a straight flush here.`;
+    case 7:
+      return `Quad ${rn(value[1])}s — the paired board makes four-of-a-kind possible, and this is the top one (kicker ${rn(value[2])}).`;
+    case 6:
+      return `${rn(value[1])}s full of ${rn(value[2])}s — the best full house available.`;
+    case 5:{
+      const s=flushSuitOf(board);
+      return `Nut flush — ${rn(value[1])}-high ${s>=0?SUITNAME[s]:''}. No straight flush is possible and the board is unpaired, so no full house beats it.`;
+    }
+    case 4:
+      return `Nut straight, ${rn(value[1])}-high — the highest straight this board allows, and no flush is possible.`;
+    case 3:
+      return `Top set (three ${rn(value[1])}s) — no straight or flush is possible, so a set is the best hand.`;
+    case 2:
+      return `Top two pair — the best hand this (very dry) board allows.`;
+    default:
+      return `The best hand available on this board.`;
+  }
+}
+
+/* =========================================================================
+   ROUND BUILDER
+   ========================================================================= */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function chooseStreet(mode){
+  const map={flop:3,turn:4,river:5};
+  if(mode!=='all') return {n:map[mode],label:mode};
+  const pick=['flop','turn','river'][Math.random()*3|0];
+  return {n:map[pick],label:pick};
+}
+function displayKey(hole){return holeRanksDesc({hole,best5:[]}).join('')+'|'+hole.map(c=>c.id).sort().join(',');}
+
+function buildRound(tier,streetMode,closeness){
+  for(let attempt=0;attempt<9000;attempt++){
+    const st=chooseStreet(streetMode);
+    const board=shuffle(DECK.slice()).slice(0,st.n);
+    const f=classify(board);
+    if(!tierAccept(tier,f)) continue;
+    const sol=solveNuts(board);
+    if(sol.distinct.length<3) continue; // skip degenerate "play the board" boards
+    const distr=pickDistractors(sol.distinct,closeness);
+    const opts=[{hole:sol.correct.hole,value:sol.maxV,isCorrect:true}];
+    const seen=new Set([displayKey(sol.correct.hole)]);
+    for(const d of distr){
+      const key=displayKey(d.hole);
+      if(seen.has(key)) continue; seen.add(key);
+      opts.push({hole:d.hole,value:d.value,isCorrect:false});
+    }
+    if(opts.length<4) continue;
+    shuffle(opts);
+    return {board,street:st,features:f,options:opts,
+            correctIndex:opts.findIndex(o=>o.isCorrect),
+            reason:describeNuts(board,f,sol.maxV),
+            catName:CATNAME[sol.maxV[0]]};
+  }
+  return null;
+}
+
+/* =========================================================================
+   UI / STATE
+   ========================================================================= */
+const $=id=>document.getElementById(id);
+const state={tier:1,streetMode:'all',rounds:0,correct:0,streak:0,best:0,recent:[],missed:[],round:null,answered:false};
+const BASE_CLOSENESS={1:0.15,2:0.30,3:0.50,4:0.70,0:0.40};
+const DIFF_LABEL=c=>c<0.28?'Easy':c<0.5?'Medium':c<0.72?'Hard':'Nasty';
+
+function closeness(){
+  const base=BASE_CLOSENESS[state.tier];
+  const acc=state.recent.length>=4 ? state.recent.reduce((a,b)=>a+b,0)/state.recent.length : 0.5;
+  return Math.max(0.08,Math.min(0.96, base+(acc-0.5)*0.6));
+}
+function cardHTML(c,size){
+  const red=(c.suit===1||c.suit===2);
+  return `<span class="card ${size} ${red?'red':'blk'}"><span class="r">${RANKNAME[c.rank]}</span><span class="s">${SUITSYM[c.suit]}</span></span>`;
+}
+function holeHTML(hole,size){
+  const s=[...hole].sort((a,b)=>b.rank-a.rank);
+  return s.map(c=>cardHTML(c,size)).join('');
+}
+
+function nextRound(){
+  const c=closeness();
+  const r=buildRound(state.tier,state.streetMode,c);
+  if(!r){ $('nextHint').textContent='Could not deal a board for this setting — try another difficulty.'; return; }
+  state.round=r; state.answered=false;
+  renderRound();
+  $('sDiff').textContent=DIFF_LABEL(c);
+}
+function renderRound(){
+  const r=state.round;
+  $('streetLbl').textContent=r.street.label;
+  $('board').innerHTML=r.board.map(c=>cardHTML(c,'big')).join('');
+  $('opts').innerHTML=r.options.map((o,i)=>
+    `<div class="opt" data-i="${i}"><div class="key">${i+1}</div><div class="cards">${holeHTML(o.hole,'sm')}</div></div>`).join('');
+  $('opts').querySelectorAll('.opt').forEach(el=>el.onclick=()=>answer(+el.dataset.i));
+  $('feedback').className='feedback'; $('feedback').innerHTML='';
+  $('nextHint').textContent='';
+}
+function answer(i){
+  if(state.answered) return;
+  state.answered=true;
+  const r=state.round, ok=(i===r.correctIndex);
+  state.rounds++; if(ok) state.correct++;
+  state.streak=ok?state.streak+1:0; state.best=Math.max(state.best,state.streak);
+  state.recent.push(ok?1:0); if(state.recent.length>12) state.recent.shift();
+  if(!ok) state.missed.push({board:r.board,street:r.street.label,
+      nutHole:r.options[r.correctIndex].hole,nutVal:r.options[r.correctIndex].value,
+      catName:r.catName,reason:r.reason});
+  // paint options
+  $('opts').querySelectorAll('.opt').forEach(el=>{
+    const idx=+el.dataset.i; el.classList.add('dis');
+    if(idx===r.correctIndex) el.classList.add('correct');
+    else if(idx===i) el.classList.add('wrong');
+  });
+  const nut=r.options[r.correctIndex].hole;
+  const fb=$('feedback'); fb.className='feedback show '+(ok?'ok':'no');
+  fb.innerHTML=`<div class="fb-head">${ok?'✓ Correct':'✗ Not the nuts'} `+
+    `<span class="pill">${r.catName}</span>`+
+    `<span style="margin-left:auto;display:flex;gap:6px;align-items:center;color:var(--dim);font-size:12px">nuts: ${holeHTML(nut,'sm')}</span></div>`+
+    `<div class="fb-reason">${r.reason}</div>`;
+  $('nextHint').innerHTML='Press <kbd>Enter</kbd> or click for the next board';
+  renderStats();
+}
+function renderStats(){
+  $('sRounds').textContent=state.rounds;
+  $('sAcc').textContent=state.rounds?Math.round(100*state.correct/state.rounds)+'%':'—';
+  $('sStreak').textContent=state.streak;
+  $('sBest').textContent=state.best;
+}
+function showSummary(){
+  $('sumLine').innerHTML=`Played <b>${state.rounds}</b> rounds · `+
+    `<b>${state.rounds?Math.round(100*state.correct/state.rounds):0}%</b> accuracy · `+
+    `best streak <b>${state.best}</b>`;
+  const miss=[...state.missed].sort((a,b)=>compareValue(b.nutVal,a.nutVal)).slice(0,6);
+  $('sumMiss').innerHTML = miss.length
+    ? '<div style="color:var(--dim);font-size:12px;margin-bottom:6px">Hardest hands you missed</div>'+
+      miss.map(m=>`<div class="miss"><span class="lab">${m.street}</span>`+
+        `<span>${m.board.map(c=>cardHTML(c,'sm')).join('')}</span>`+
+        `<span style="margin-left:auto;text-align:right"><span class="pill">${m.catName}</span><br>`+
+        `<span style="color:var(--dim);font-size:11px">nuts ${holeHTML(m.nutHole,'sm')}</span></span></div>`).join('')
+    : '<div style="color:var(--dim)">No missed hands — clean session. 🔥</div>';
+  $('overlay').classList.add('show');
+}
+
+/* --- settings wiring --- */
+function setTier(t){ state.tier=t; $('tierSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.t===t));
+  $('tierHint').textContent=TIER_HINT[t]; nextRound(); }
+function setStreet(s){ state.streetMode=s; $('streetSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===s)); nextRound(); }
+$('tierSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setTier(+b.dataset.t));
+$('streetSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setStreet(b.dataset.s));
+$('endBtn').onclick=showSummary;
+$('closeSum').onclick=()=>$('overlay').classList.remove('show');
+$('newSession').onclick=()=>{Object.assign(state,{rounds:0,correct:0,streak:0,best:0,recent:[],missed:[]});renderStats();$('overlay').classList.remove('show');nextRound();};
+
+document.addEventListener('keydown',e=>{
+  if($('overlay').classList.contains('show')) return;
+  if(!state.answered && e.key>='1' && e.key<='4'){ const i=+e.key-1; if(state.round&&i<state.round.options.length) answer(i); }
+  else if(state.answered && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); nextRound(); }
+});
+$('table').addEventListener('click',e=>{ if(state.answered && !e.target.closest('.opt')) nextRound(); });
+
+/* =========================================================================
+   UNIT TESTS — known boards with known correct nuts.
+   ========================================================================= */
+function runTests(){
+  const T=[];
+  const nut=arr=>solveNuts(parseCards(arr)).maxV;
+  T.push(['Royal flush on monotone AKQ spades', ()=>{const v=nut(['As','Ks','Qs']);return v[0]===8&&v[1]===14;}]);
+  T.push(['Dry flop K72r → nuts = top set (KK)', ()=>{const v=nut(['Kd','7c','2s']);return v[0]===3&&v[1]===13;}]);
+  T.push(['Paired flop 99x → nuts = quad nines', ()=>{const v=nut(['9h','9d','2c']);return v[0]===7&&v[1]===9;}]);
+  T.push(['SF board 6-T spades → nuts = Q-high SF', ()=>{const v=nut(['6s','7s','8s','9s','Ts']);return v[0]===8&&v[1]===12;}]);
+  T.push(['Monotone AKx hearts → nuts = A-high flush', ()=>{const v=nut(['Ah','Kh','5h']);return v[0]===5&&v[1]===14;}]);
+  T.push(['Connected 987 (no flush) → nuts = J-high straight', ()=>{const v=nut(['9c','8d','7h','2s']);return v[0]===4&&v[1]===11;}]);
+  T.push(['Double-paired KKQQ river → nuts = quad kings', ()=>{const v=nut(['Ks','Kd','Qs','Qd','2c']);return v[0]===7&&v[1]===13;}]);
+  T.push(['Wheel A2345 < 6-high straight', ()=>{
+    const w=evaluate5(parseCards(['As','2d','3c','4h','5s']));
+    const s=evaluate5(parseCards(['6s','2d','3c','4h','5h']));
+    return w[0]===4&&w[1]===5&&compareValue(w,s)<0;}]);
+  T.push(['4-flush board (no SF) → nuts = A-high flush', ()=>{
+    const v=nut(['Ah','Kh','8h','3h','2d']);return v[0]===5&&v[1]===14;}]);
+  const results=T.map(([name,fn])=>{let pass=false,err=null;try{pass=fn();}catch(e){err=e.message;}return{name,pass,err};});
+  const passed=results.filter(r=>r.pass).length;
+  const badge=$('testBadge');
+  badge.textContent=`self-tests: ${passed}/${results.length} ${passed===results.length?'✓':'✗'}`;
+  badge.className='badge '+(passed===results.length?'pass':'fail');
+  badge.onclick=()=>{const d=$('testDetail');d.style.display=d.style.display==='block'?'none':'block';};
+  $('testDetail').innerHTML=results.map(r=>
+    `<div style="color:${r.pass?'var(--good)':'var(--bad)'}">${r.pass?'✓':'✗'} ${r.name}${r.err?' — '+r.err:''}</div>`).join('');
+  return passed===results.length;
+}
+
+/* --- boot --- */
+runTests();
+setTier(1);
+renderStats();
+</script>
