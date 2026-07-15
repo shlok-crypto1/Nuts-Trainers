@@ -1,547 +1,632 @@
-<meta charset="utf-8">
-<title>Nuts Trainer — Hold'em Board Reading</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>FOAMICO · SKU Price Bot</title>
+
+<!-- Install-as-app (Add to Home Screen) -->
+<meta name="theme-color" content="#95C12B" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="FOAMICO" />
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+AAAABAAAIAABAAAAAAgAAEAAAgAAAAAEAAAgAAEAAAAACAAAQAACAAAAABAAAIAAAAAEAAAgAAEAAAAACAAAQAACAAAAABAAAIAAAAAEAAAIAABAAAIAAAAAEAAAgAAAAAQAACAAAQAAAAAIAABAAAIAAAAAEAAAgAAAAAQAACAAAQAAAAAIAAAQAACAAAAABAAAIAABAAAAAAgAAEAAAgAAAAAQAACAAAAABAAAIAABAAAAAAgAAEAAAgAAAAAQAACAAAEAAAAARxouro1uPAQBcAAAAAQAACAAAQAAAAAIAABAAAECNJo8AgMvNzZP/2pPTQw9MAADQ++A/9vcKAgEAQMfD/9g/UwgIAAA6H/3H/hwxUD9fAgQw/t38ubgAABj+Sn4G1wAXAAAC375dAwQAAKFjKwIEAAChIysCBAAAoeMqAgQAAKGjKgIEAAChYyoCBAAAoSMqAgQAAKHjKQIEAAAgAABIeWt2BRAAAISOpQgQAACAAAAABABAsN7P5D4GEAAAgAAAIOXt2BVAAAAAAgAAEAAAgAAA6Fna5+K+ByAAAAABAAAIAABAAAAAAgAAEAAAgAAAAAEAAAgAAEAAAAACAIAdOzk99PsiAAAAAQAACAAAQAAAdCLlc3Gf/wsAAEAAAND727G3fwEAAAgAAEAAAATr9Uzu/C8AAAgbS+MvAAAAAQBA72/N3v4FAABh42n8BQAAYSNq/AUAAGFjavwFAABho2r8BQAAYeNq/AUAAGEja/wFAABhY2v86zR5BAD9RsDl5sbw4wIA4Bpg/HEBAIiLgCUvAkZfAABQeQzMGQKGXwAA0OBV4LlBYPAFAACdBgH98yVAABAAAEBEAJwdX48eAwC4AAAAAgAAEAAAgAAAAAQAACAAAIBqA8B/CggAOc6Or0cXAABIvQAAAAIAABAAAEC3AeCLgADQv7u9dwEAgOQLAAAgAACAlADwPQAA6Nf9nXcBAID0CwAAIAAAgJQA8D0AAOjPw313AQAAFwAAIDYAfAwAAP340667AACAC4ArAAD0/vbvAgAALgAAgAAYfAwAAC371467AACAC4ArAAD0/vbvAgAALgCuAACQ8PbvAgAALgCuAACQ8PbvAgAALgCuAACQ8PbvAgAALgCuAACQ8PbvAgAALgCuAACQ8Pa/1QVABABAm+O/VQAAAO3aKgBcAQCgvbf/WS4AIgAA2hr/WQIAAGjPLAHgCgAA7bz9z3oBEAEA0Mb4zxoAIgAA2hj/2QMAAGjD7AHgCgAAdb/9L3YBEAEAUPeulpZ+WAAw/pUHgAgAgHp31JcAASDQ4gHgCgAA9e1n6eGXAADjX2EAiAAAqGsvS4+/FAAY/4oCQAQAQB37WBJ+SQAw/hUEgAgAgHX3sCT+0gCQPP7DMAzVDPDF1dGtfxUAMPwBFwDXAACMf3gAiAAAjH9oAIgAAIz/blQ9tr4XAIDhD7kAuAYAYPzDA0AEAGD8l9HUuPpIAADDH3IBcA0AwE6FXwBcAwAw/IEXANcAAOxR+AXANQAAwx8eAEIAAMMfHABCAADDHxwAQgAAwx8cAEIAAMMfHABCAADDHxwAYgCA5NEXAEIAgCH7/ynjf6YjBgCMvgBAEAAYfAGAIAAw+AIAUQBg7PvwG8BDSj1O6LrbAAAAAElFTkSuQmCC" />
+<link rel="icon" href="data:image/png;base64,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" />
+<link rel="manifest" href='data:application/manifest+json,{"name":"FOAMICO SKU Price Bot","short_name":"FOAMICO","start_url":".","display":"standalone","background_color":"%23F2F4EC","theme_color":"%2395C12B","icons":[{"src":"data:image/png;base64,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","sizes":"512x512","type":"image/png"}]}' />
+
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
   :root{
-    --bg:#0f1512; --felt:#14231b; --felt2:#183025; --line:#26473a;
-    --ink:#e8f0ea; --dim:#8fb0a0; --accent:#3ad19a; --accentd:#1f7a5a;
-    --good:#39d98a; --goodbg:#123726; --bad:#ff6b6b; --badbg:#3a1616;
-    --cardbg:#fbfdfb; --red:#d8143a; --blk:#161a18;
-    --btn:#1c3428; --btnh:#244534;
+    --key-black:#1A1A1A; --kiwi:#95C12B; --avocado:#3F5E12; --calm:#E4F2C5;
+    --sand:#9D9E9E; --egg:#FEFEFE; --charcoal:#2B2B2B; --slate:#6B6B6B;
+    --light-grey:#DDDDDD; --mist:#F2F4EC; --paper:#F6F8F1;
+    --head:"Montserrat","Calibri",Arial,sans-serif;
+    --body:"Poppins","Calibri",Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
   }
   *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    background:radial-gradient(120% 90% at 50% -10%, #1b3327 0%, var(--bg) 60%);
-    color:var(--ink); font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    min-height:100vh; padding:18px 14px 40px;
-  }
-  .wrap{max-width:760px;margin:0 auto}
-  h1{font-size:20px;margin:0;letter-spacing:.3px}
-  .sub{color:var(--dim);font-size:12.5px;margin-top:2px}
-  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-  .settings{margin:16px 0 4px;display:flex;flex-direction:column;gap:8px}
-  .segrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .seglabel{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;min-width:66px}
-  .seg{display:inline-flex;background:#0d1a14;border:1px solid var(--line);border-radius:9px;overflow:hidden}
-  .seg button{background:transparent;color:var(--dim);border:0;padding:6px 11px;font:600 12.5px/1 inherit;cursor:pointer}
-  .seg button+button{border-left:1px solid var(--line)}
-  .seg button.on{background:var(--accentd);color:#eafff5}
-  .seg button:hover:not(.on){background:#12241a;color:var(--ink)}
-  .tierhint{color:var(--dim);font-size:12px;min-height:16px}
-  .panel{background:linear-gradient(180deg,var(--felt) 0%, var(--felt2) 100%);
-    border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin-top:14px;
-    box-shadow:inset 0 1px 0 #ffffff10, 0 8px 30px #0006}
-  .street{text-align:center;color:var(--accent);font-weight:700;letter-spacing:3px;font-size:13px;text-transform:uppercase}
-  .board{display:flex;justify-content:center;gap:9px;margin:12px 0 4px;flex-wrap:wrap}
-  .card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
-    background:var(--cardbg);border-radius:9px;font-weight:800;line-height:1;
-    box-shadow:0 2px 6px #0007; user-select:none}
-  .card.big{width:58px;height:80px}
-  .card.big .r{font-size:22px} .card.big .s{font-size:24px;margin-top:3px}
-  .card.sm{width:40px;height:54px}
-  .card.sm .r{font-size:15px} .card.sm .s{font-size:17px;margin-top:2px}
-  .card.red{color:var(--red)} .card.blk{color:var(--blk)}
-  .ask{text-align:center;color:var(--dim);margin:12px 0 4px;font-size:13.5px}
-  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-  .opt{display:flex;align-items:center;gap:12px;background:var(--btn);border:1.5px solid var(--line);
-    border-radius:12px;padding:12px 14px;cursor:pointer;transition:.08s;text-align:left}
-  .opt:hover:not(.dis){background:var(--btnh);border-color:var(--accentd)}
-  .opt.dis{cursor:default}
-  .opt .key{width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;
-    border-radius:6px;background:#0d1a14;border:1px solid var(--line);font-weight:700;font-size:12.5px;color:var(--dim)}
-  .opt .cards{display:flex;gap:6px}
-  .opt.correct{background:var(--goodbg);border-color:var(--good)}
-  .opt.wrong{background:var(--badbg);border-color:var(--bad)}
-  .opt.correct .key{color:var(--good);border-color:var(--good)}
-  .opt.wrong .key{color:var(--bad);border-color:var(--bad)}
-  .feedback{margin-top:14px;min-height:52px;border-radius:12px;padding:12px 14px;border:1px solid transparent}
-  .feedback.show.ok{background:var(--goodbg);border-color:#2b6b4c}
-  .feedback.show.no{background:var(--badbg);border-color:#7a3030}
-  .fb-head{font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .fb-reason{color:var(--ink);margin-top:6px;font-size:13.5px;opacity:.92}
-  .nexthint{text-align:center;color:var(--dim);font-size:12px;margin-top:10px;height:16px}
-  .stats{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-  .stat{flex:1;min-width:84px;background:#0d1a14;border:1px solid var(--line);border-radius:11px;padding:9px 10px;text-align:center}
-  .stat b{display:block;font-size:19px} .stat span{color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px}
-  .row-actions{display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap}
-  .ghost{background:transparent;border:1px solid var(--line);color:var(--dim);padding:7px 14px;border-radius:9px;cursor:pointer;font:600 12.5px inherit}
-  .ghost:hover{color:var(--ink);border-color:var(--accentd)}
-  .badge{font-size:11.5px;border:1px solid var(--line);border-radius:20px;padding:4px 10px;color:var(--dim);cursor:pointer;white-space:nowrap}
-  .badge.pass{color:var(--good);border-color:#2b6b4c}
-  .badge.fail{color:var(--bad);border-color:#7a3030}
-  #testDetail{display:none;margin-top:8px;font-size:12px;color:var(--dim);background:#0d1a14;border:1px solid var(--line);border-radius:10px;padding:10px}
-  #testDetail div{padding:2px 0}
-  .overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
-  .overlay.show{display:flex}
-  .modal{background:var(--felt2);border:1px solid var(--line);border-radius:16px;max-width:520px;width:100%;padding:22px;max-height:88vh;overflow:auto}
-  .modal h2{margin:0 0 4px}
-  .miss{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
-  .miss .lab{color:var(--dim);font-size:12px;min-width:74px}
-  .pill{display:inline-block;font-size:11px;color:var(--accent);border:1px solid var(--accentd);border-radius:20px;padding:2px 8px}
-  kbd{background:#0d1a14;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font:600 11px inherit;color:var(--ink)}
-</style>
+  html,body{margin:0;padding:0}
+  body{font-family:var(--body);color:var(--slate);background:var(--mist);line-height:1.6;
+    -webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top)}
+  .wrap{max-width:1020px;margin:0 auto;padding:22px 18px 80px}
 
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
+  .kicker{font-family:var(--head);font-weight:700;text-transform:uppercase;letter-spacing:.16em;
+    color:var(--avocado);font-size:10.5px;margin:0}
+  .wordmark{font-family:var(--head);font-weight:800;font-size:28px;color:var(--key-black);
+    letter-spacing:-.5px;line-height:1;display:inline-flex;align-items:center;margin-top:6px}
+  .wordmark .dot{width:10px;height:10px;border-radius:3px;background:var(--kiwi);
+    display:inline-block;margin-left:5px;transform:translateY(2px)}
+
+  /* language toggle */
+  .lang{display:inline-flex;border:1px solid var(--light-grey);border-radius:999px;overflow:hidden;
+    background:var(--egg);flex:none}
+  .lang button{font-family:var(--head);font-weight:700;font-size:12px;border:none;cursor:pointer;
+    padding:7px 14px;background:transparent;color:var(--slate)}
+  .lang button.on{background:var(--kiwi);color:var(--key-black)}
+
+  h1{font-family:var(--head);font-weight:700;color:var(--key-black);font-size:19px;margin:12px 0 2px}
+  .sub{font-size:13px;color:var(--slate);margin:0 0 20px;max-width:640px}
+
+  .card{background:var(--egg);border:1px solid var(--light-grey);border-radius:14px;padding:18px;margin-bottom:20px}
+  .card h2{font-family:var(--head);font-weight:700;font-size:12.5px;text-transform:uppercase;
+    letter-spacing:.1em;color:var(--avocado);margin:0 0 12px}
+
+  textarea{width:100%;min-height:150px;resize:vertical;font-family:var(--mono);font-size:13.5px;
+    color:var(--key-black);background:var(--paper);border:1px solid var(--light-grey);border-radius:10px;
+    padding:14px 16px;line-height:1.7}
+  textarea:focus{outline:none;border-color:var(--kiwi);box-shadow:0 0 0 3px var(--calm)}
+
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  .btn{font-family:var(--head);font-weight:700;font-size:14px;border:none;cursor:pointer;
+    border-radius:999px;padding:12px 26px;transition:transform .05s ease,filter .15s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--kiwi);color:var(--key-black)}
+  .btn-primary:hover{filter:brightness(1.04)}
+  .btn-ghost{background:transparent;color:var(--slate);border:1px solid var(--light-grey);font-weight:600}
+  .btn-ghost:hover{background:var(--paper)}
+  .btn-mic{display:inline-flex;align-items:center;gap:8px;padding:12px 20px}
+  .btn-mic svg{width:18px;height:18px;fill:currentColor;flex:none}
+  .btn-mic.listening{background:var(--key-black);color:var(--egg);border-color:var(--key-black)}
+  .btn-mic.listening svg{animation:micPulse 1s ease-in-out infinite}
+  .btn:disabled{cursor:not-allowed;opacity:.5}
+  .voice-status{width:100%;min-height:20px;margin:0;font-size:12px;color:var(--slate)}
+  .voice-status.active{color:var(--avocado);font-weight:600}
+  .voice-status.error{color:#9d3d27}
+  @keyframes micPulse{50%{transform:scale(1.18);opacity:.65}}
+
+  .examples{margin-top:16px}
+  .examples .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--sand);
+    font-weight:600;margin-bottom:8px}
+  .chip{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--avocado);background:var(--calm);
+    border:1px solid #d3e3af;border-radius:999px;padding:5px 12px;margin:0 6px 6px 0;cursor:pointer}
+  .chip:hover{filter:brightness(.97)}
+
+  .results-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 12px;flex-wrap:wrap;gap:10px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead th{background:var(--avocado);color:var(--egg);font-family:var(--head);font-weight:700;text-align:left;
+    padding:11px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  thead th.num{text-align:right}
+  tbody td{padding:12px;border-bottom:1px solid var(--light-grey);vertical-align:top}
+  tbody tr:nth-child(odd){background:var(--paper)}
+  tbody tr:nth-child(even){background:var(--egg)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .src{font-family:var(--mono);font-size:12.5px;color:var(--key-black)}
+  .tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font-size:10.5px;font-weight:600;letter-spacing:.02em;border-radius:6px;padding:2px 7px;text-transform:uppercase}
+  .tag.model{background:var(--key-black);color:var(--egg)}
+  .tag.spec{background:var(--calm);color:var(--avocado)}
+  .tag.custom{background:#efe7d0;color:#8a6d12}
+  .skuline{font-size:12.5px;font-weight:600;color:var(--avocado);background:var(--calm);
+    border:1px solid #d3e3af;border-radius:6px;padding:3px 9px;display:inline-block}
+  .skuline strong{color:var(--key-black);font-weight:700}
+  .note{font-size:11.5px;color:var(--slate);margin-top:6px;font-style:italic}
+  .price-strong{font-weight:600;color:var(--key-black)}
+  tr.flag td{background:#faf6ec}
+  .flagtag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.03em;background:#f3ead2;
+    color:#8a6d12;border-radius:6px;padding:2px 8px;text-transform:uppercase}
+  .asknote{font-size:12px;color:#7a6410;margin-top:6px}
+
+  .total-bar{margin-top:18px;background:var(--key-black);border-radius:12px;color:var(--egg);padding:16px 22px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .total-bar .lbl{font-family:var(--head);font-weight:700;font-size:12px;text-transform:uppercase;
+    letter-spacing:.14em;color:var(--sand)}
+  .total-bar .amt{font-family:var(--head);font-weight:800;font-size:26px}
+  .total-bar .amt .k{color:var(--kiwi)}
+  .total-meta{font-size:11.5px;color:var(--sand);margin-top:4px}
+
+  .empty{color:var(--sand);font-size:13px;padding:6px 2px}
+  .foot{margin-top:34px;font-size:10.5px;color:var(--sand);text-align:center;font-family:var(--head);letter-spacing:.06em}
+  .hidden{display:none}
+
+  /* ===== structured builder ===== */
+  .builder{display:grid;grid-template-columns:1.3fr 1.7fr 1fr .7fr auto;gap:10px;align-items:end}
+  .fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .fld-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--sand);font-weight:600}
+  .fld select,.fld input{font-family:var(--body);font-size:14px;color:var(--key-black);background:var(--paper);
+    border:1px solid var(--light-grey);border-radius:10px;padding:11px 12px;width:100%;height:44px}
+  .fld select:focus,.fld input:focus{outline:none;border-color:var(--kiwi);box-shadow:0 0 0 3px var(--calm)}
+  .fld select:disabled,.fld input:disabled{opacity:.45;cursor:not-allowed;background:var(--mist)}
+  .fld-add{white-space:nowrap;height:44px;padding:0 22px}
+  .builder-err{min-height:18px;margin:10px 0 0;font-size:12.5px;color:#9d3d27;font-weight:600}
+  #listWrap{margin-top:6px}
+  .li-item{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;
+    border:1px solid var(--light-grey);border-radius:10px;background:var(--paper);margin-top:8px}
+  .li-main{font-size:13.5px;color:var(--key-black)}
+  .li-main .q{font-family:var(--head);font-weight:700;color:var(--avocado);margin-right:8px}
+  .li-rm{border:none;background:transparent;color:var(--slate);cursor:pointer;font-size:16px;line-height:1;
+    padding:4px 8px;border-radius:6px;flex:none}
+  .li-rm:hover{background:var(--calm);color:var(--key-black)}
+  .li-empty{color:var(--sand);font-size:13px;padding:8px 2px}
+  @media(max-width:640px){
+    .builder{grid-template-columns:1fr 1fr}
+    .fld-model,.fld-thk,.fld-add{grid-column:1 / -1}
+  }
+
+  @media(max-width:640px){ .wordmark{font-size:24px} }
+</style>
+</head>
+<body>
 <div class="wrap">
+
   <div class="topbar">
     <div>
-      <h1>♠ Nuts Trainer <span style="color:var(--red)">♥</span></h1>
-      <div class="sub">Read the board. Pick the best possible hand.</div>
+      <p class="kicker" data-i="kicker">From the house of LPPL · Price List 2026</p>
+      <span class="wordmark">FOAMICO<span class="dot"></span></span>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span id="testBadge" class="badge">running tests…</span>
-      <button class="ghost" id="endBtn">End session</button>
-    </div>
-  </div>
-  <div id="testDetail"></div>
-
-  <div class="settings">
-    <div class="segrow">
-      <span class="seglabel">Difficulty</span>
-      <div class="seg" id="tierSeg">
-        <button data-t="1">L1 Dry</button>
-        <button data-t="2">L2 Straighty</button>
-        <button data-t="3">L3 Flush/Paired</button>
-        <button data-t="4">L4 Nasty</button>
-        <button data-t="0">Mixed</button>
-      </div>
-    </div>
-    <div class="tierhint" id="tierHint"></div>
-    <div class="segrow">
-      <span class="seglabel">Street</span>
-      <div class="seg" id="streetSeg">
-        <button data-s="all">All</button>
-        <button data-s="flop">Flop</button>
-        <button data-s="turn">Turn</button>
-        <button data-s="river">River</button>
-      </div>
+    <div class="lang">
+      <button id="en" class="on">EN</button>
+      <button id="hi">हिंदी</button>
     </div>
   </div>
 
-  <div class="panel" id="table">
-    <div class="street" id="streetLbl">—</div>
-    <div class="board" id="board"></div>
-    <div class="ask">What are <b>the nuts</b>?</div>
-    <div class="opts" id="opts"></div>
-    <div class="feedback" id="feedback"></div>
-    <div class="nexthint" id="nextHint"></div>
-  </div>
+  <h1 data-i="title">SKU Price Summary</h1>
+  <p class="sub" data-i="sub"></p>
 
-  <div class="stats">
-    <div class="stat"><b id="sRounds">0</b><span>Rounds</span></div>
-    <div class="stat"><b id="sAcc">—</b><span>Accuracy</span></div>
-    <div class="stat"><b id="sStreak">0</b><span>Streak</span></div>
-    <div class="stat"><b id="sBest">0</b><span>Best</span></div>
-    <div class="stat"><b id="sDiff">—</b><span>Distractor diff</span></div>
-  </div>
-  <div class="row-actions">
-    <span style="color:var(--dim);font-size:12px;align-self:center">
-      <kbd>1</kbd>–<kbd>4</kbd> answer &nbsp;·&nbsp; <kbd>Enter</kbd> next round
-    </span>
-  </div>
-</div>
-
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <h2>Session summary</h2>
-    <div class="sub" id="sumLine"></div>
-    <div id="sumMiss" style="margin-top:14px"></div>
-    <div class="row-actions" style="justify-content:flex-end;margin-top:18px">
-      <button class="ghost" id="closeSum">Close</button>
-      <button class="ghost" id="newSession" style="border-color:var(--accentd);color:var(--accent)">New session</button>
+  <div class="card">
+    <h2 data-i="yourList">Build your list</h2>
+    <div class="builder">
+      <label class="fld fld-model">
+        <span class="fld-lbl" data-i="fModel">Model</span>
+        <select id="bModel"></select>
+      </label>
+      <label class="fld fld-thk">
+        <span class="fld-lbl" data-i="fThk">Variant / Thickness</span>
+        <select id="bThk" disabled></select>
+      </label>
+      <label class="fld fld-size">
+        <span class="fld-lbl" data-i="fSize">Size</span>
+        <input id="bSize" type="text" autocomplete="off" spellcheck="false" placeholder="72x72" disabled />
+      </label>
+      <label class="fld fld-qty">
+        <span class="fld-lbl" data-i="fQty">Qty</span>
+        <input id="bQty" type="number" min="1" step="1" value="1" inputmode="numeric" />
+      </label>
+      <button class="btn btn-primary fld-add" id="bAdd" data-i="add">+ Add</button>
+    </div>
+    <p class="builder-err" id="bErr" role="alert"></p>
+    <div id="listWrap"></div>
+    <div class="row">
+      <button class="btn btn-ghost" id="clear" data-i="clearAll">Clear all</button>
     </div>
   </div>
+
+  <div class="card" id="resultCard">
+    <div class="results-head">
+      <h2 style="margin:0" data-i="summary">Summary</h2>
+      <button class="btn btn-ghost hidden" id="copy" style="padding:8px 18px;font-size:13px" data-i="copy">Copy summary</button>
+    </div>
+    <div id="output"></div>
+  </div>
+
+  <div class="foot" data-i="foot">FOAMICO · SKU Price Summary · MRP (incl. GST) · Confidential</div>
 </div>
 
 <script>
-/* =========================================================================
-   CORE ENGINE  — poker hand evaluation + nut solver.
-   This is the part that MUST be correct. Unit tests live at the bottom.
-   Card = {rank:2..14 (A=14), suit:0..3, id}.  Suits: 0♠ 1♥ 2♦ 3♣.
-   ========================================================================= */
-const RANKNAME={14:'A',13:'K',12:'Q',11:'J',10:'10',9:'9',8:'8',7:'7',6:'6',5:'5',4:'4',3:'3',2:'2'};
-const SUITSYM=['♠','♥','♦','♣'];
-const SUITNAME=['spades','hearts','diamonds','clubs'];
-const CATNAME=['high card','one pair','two pair','three of a kind','straight','flush','full house','four of a kind','straight flush'];
-
-const DECK=[];
-for(let r=2;r<=14;r++) for(let s=0;s<4;s++) DECK.push({rank:r,suit:s,id:r*4+s});
-
-function parseCard(str){ // 'As','Td','9h','Ks'
-  const rc=str.slice(0,-1), sc=str.slice(-1).toLowerCase();
-  const rmap={A:14,K:13,Q:12,J:11,T:10}; const smap={s:0,h:1,d:2,c:3};
-  const rank=rmap[rc.toUpperCase()]!==undefined?rmap[rc.toUpperCase()]:parseInt(rc,10);
-  const suit=smap[sc];
-  return {rank,suit,id:rank*4+suit};
-}
-function parseCards(arr){return arr.map(parseCard);}
-
-// all k-index combinations of n, memoized for the sizes we use (5-of-6, 5-of-7)
-const _comboMemo={};
-function kCombos(n,k){
-  const key=n+'-'+k; if(_comboMemo[key]) return _comboMemo[key];
-  const out=[]; const c=[];
-  (function rec(start,d){
-    if(d===k){out.push(c.slice());return;}
-    for(let i=start;i<n;i++){c.push(i);rec(i+1,d+1);c.pop();}
-  })(0,0);
-  return _comboMemo[key]=out;
-}
-
-// Evaluate exactly 5 cards -> comparable array [category, tiebreakers...].
-// Higher array (lexicographically) = better hand.
-function evaluate5(cards){
-  const ranks=cards.map(c=>c.rank);
-  const suits=cards.map(c=>c.suit);
-  const isFlush=suits.every(s=>s===suits[0]);
-  const cnt={};
-  for(const r of ranks) cnt[r]=(cnt[r]||0)+1;
-  const groups=Object.keys(cnt).map(r=>({rank:+r,count:cnt[r]}))
-    .sort((a,b)=> b.count-a.count || b.rank-a.rank);
-  // straight (Ace counts high AND low for the wheel)
-  const rset=new Set(ranks); if(rset.has(14)) rset.add(1);
-  let straightHigh=0;
-  for(let hi=14;hi>=5;hi--){
-    let ok=true;
-    for(let k=0;k<5;k++){ if(!rset.has(hi-k)){ok=false;break;} }
-    if(ok){straightHigh=hi;break;}
-  }
-  const descRanks=[...ranks].sort((a,b)=>b-a);
-  if(isFlush && straightHigh) return [8, straightHigh];
-  if(groups[0].count===4) return [7, groups[0].rank, groups[1].rank];
-  if(groups[0].count===3 && groups[1] && groups[1].count>=2) return [6, groups[0].rank, groups[1].rank];
-  if(isFlush) return [5, ...descRanks];
-  if(straightHigh) return [4, straightHigh];
-  if(groups[0].count===3) return [3, groups[0].rank, ...groups.slice(1).map(g=>g.rank)];
-  if(groups[0].count===2 && groups[1] && groups[1].count===2){
-    const p=[groups[0].rank,groups[1].rank].sort((a,b)=>b-a);
-    return [2, p[0], p[1], groups[2].rank];
-  }
-  if(groups[0].count===2) return [1, groups[0].rank, ...groups.slice(1).map(g=>g.rank)];
-  return [0, ...descRanks];
-}
-function compareValue(a,b){
-  const n=Math.max(a.length,b.length);
-  for(let i=0;i<n;i++){ const d=(a[i]||0)-(b[i]||0); if(d) return d<0?-1:1; }
-  return 0;
-}
-// Best 5-card hand out of 5..7 cards.
-function evaluateBest(cards){
-  if(cards.length<=5) return {value:evaluate5(cards), best5:cards};
-  let best=null,bestCards=null;
-  for(const combo of kCombos(cards.length,5)){
-    const five=combo.map(i=>cards[i]);
-    const v=evaluate5(five);
-    if(best===null||compareValue(v,best)>0){best=v;bestCards=five;}
-  }
-  return {value:best,best5:bestCards};
-}
-
-// --- Nut solver: brute force every possible 2-card holding vs the board. ---
-function usedCount(e){
-  const ids=new Set(e.best5.map(c=>c.id));
-  return (ids.has(e.hole[0].id)?1:0)+(ids.has(e.hole[1].id)?1:0);
-}
-function holeRanksDesc(e){return [e.hole[0].rank,e.hole[1].rank].sort((a,b)=>b-a);}
-// Which of two equal-value holdings makes the "cleaner" representative:
-// prefer both cards actually used, then higher hole cards.
-function repBetter(a,b){
-  const ua=usedCount(a),ub=usedCount(b); if(ua!==ub) return ua>ub;
-  const ra=holeRanksDesc(a),rb=holeRanksDesc(b);
-  if(ra[0]!==rb[0]) return ra[0]>rb[0];
-  if(ra[1]!==rb[1]) return ra[1]>rb[1];
-  return false;
-}
-function solveNuts(board){
-  const used=new Set(board.map(c=>c.id));
-  const unseen=DECK.filter(c=>!used.has(c.id));
-  let maxV=null; const entries=[];
-  for(let i=0;i<unseen.length;i++) for(let j=i+1;j<unseen.length;j++){
-    const hole=[unseen[i],unseen[j]];
-    const r=evaluateBest(board.concat(hole));
-    const e={hole,value:r.value,best5:r.best5};
-    entries.push(e);
-    if(maxV===null||compareValue(r.value,maxV)>0) maxV=r.value;
-  }
-  let correct=null;
-  for(const e of entries) if(compareValue(e.value,maxV)===0){ if(!correct||repBetter(e,correct)) correct=e; }
-  // one representative holding per DISTINCT sub-nut hand strength
-  const map=new Map();
-  for(const e of entries){
-    if(compareValue(e.value,maxV)<0){
-      const k=e.value.join(',');
-      const cur=map.get(k);
-      if(!cur||repBetter(e,cur)) map.set(k,e);
-    }
-  }
-  const distinct=[...map.values()].sort((a,b)=>compareValue(b.value,a.value));
-  return {maxV,correct,distinct};
-}
-
-/* =========================================================================
-   BOARD TEXTURE + DIFFICULTY TIERS
-   Tiers gate which boards get dealt, based on what's POSSIBLE right now.
-   ========================================================================= */
-function classify(board){
-  const suitCounts=[0,0,0,0], rc={};
-  for(const c of board){ suitCounts[c.suit]++; rc[c.rank]=(rc[c.rank]||0)+1; }
-  const maxSuit=Math.max(...suitCounts);
-  const counts=Object.values(rc).sort((a,b)=>b-a);
-  const paired=counts[0]>=2, trips=counts[0]>=3;
-  const twoPairPlus=counts.filter(x=>x>=2).length>=2 || trips;
-  const flushPossible=maxSuit>=3;
-  const rset=new Set(board.map(c=>c.rank)); if(rset.has(14)) rset.add(1);
-  let maxWin=0;
-  for(let lo=1;lo<=10;lo++){ let n=0; for(let r=lo;r<=lo+4;r++) if(rset.has(r)) n++; if(n>maxWin) maxWin=n; }
-  return {maxSuit,paired,trips,twoPairPlus,flushPossible,maxWin,
-          straightMade:maxWin>=5, straightHeavy:maxWin>=4};
-}
-function tierAccept(tier,f){
-  switch(tier){
-    case 1: return !f.flushPossible && !f.paired && f.maxWin<=2;          // dry
-    case 2: return !f.flushPossible && !f.paired && f.maxWin>=3;          // coordinated, no flush
-    case 3: return (((f.flushPossible?1:0)+(f.paired?1:0))===1)          // exactly one threat
-                   && !f.twoPairPlus
-                   && !(f.flushPossible&&f.straightHeavy)
-                   && !(f.paired&&f.straightHeavy);
-    case 4: return (f.flushPossible&&f.paired) || f.twoPairPlus          // multi-threat monsters
-                   || (f.flushPossible&&f.straightHeavy) || (f.paired&&f.straightHeavy);
-    default: return true;                                                // Mixed
-  }
-}
-const TIER_HINT={
-  1:'Dry boards — rainbow-ish, unpaired, uncoordinated. The nuts is almost always the top set.',
-  2:'Coordinated but no flush possible. A straight is often the nuts — read WHICH straight.',
-  3:'One advanced threat: either a flush is possible, or the board is paired. Boats & nut flushes appear.',
-  4:'Multi-threat monsters: flush+paired, double-paired, straight+flush. The nuts is often a surprise.',
-  0:'Mixed — every texture from dry to nasty.'
+/* ================= DATA ================= */
+const COLS=[
+ {m:'Ecolite',v:'Classic',t:5,r:510},{m:'Signature',v:'Classic',t:4,r:367},{m:'Signature',v:'Premium',t:4,r:400},
+ {m:'Signature',v:'Luxury',t:4,r:400},{m:'Signature',v:'Classic',t:5,r:433},{m:'Signature',v:'Premium',t:5,r:467},
+ {m:'Signature',v:'Luxury',t:5,r:467},{m:'Magic',v:'Classic',t:5,r:467},{m:'Maxa',v:'Classic',t:5,r:533},
+ {m:'Duro',v:'Classic',t:5,r:533},{m:'Duro',v:'Premium',t:6,r:653},{m:'Duro',v:'Luxury',t:6,r:667},
+ {m:'Luma',v:'Classic',t:6,r:867},{m:'Luma',v:'Premium',t:8,r:933},{m:'Luma',v:'Luxury',t:10,r:1067},
+ {m:'Resto',v:'Classic',t:5,r:667},{m:'Resto',v:'Classic',t:6,r:800},{m:'Resto',v:'Premium',t:6.5,r:933},
+ {m:'Resto',v:'Luxury',t:7,r:1000},{m:'Sova',v:'Classic',t:5,r:667},{m:'Sova',v:'Classic',t:6,r:800},
+ {m:'Sova',v:'Premium',t:6.5,r:933},{m:'Sova',v:'Luxury',t:7,r:1000},{m:'Sova',v:'Natural',t:6,r:1500},
+ {m:'Ultima',v:'Classic',t:5,r:867},{m:'Ultima',v:'Classic',t:6,r:1000},{m:'Ultima',v:'Premium',t:6.5,r:1133},
+ {m:'Ultima',v:'Luxury',t:7,r:1333},{m:'Ultima',v:'Natural',t:6,r:2000},{m:'Riva',v:'Natural',t:6,r:3000},
+ {m:'Riva',v:'R1000',t:8,r:2000},{m:'Riva',v:'R2000',t:9,r:2667},{m:'Riva',v:'R3000',t:10,r:3333},
+ {m:'Sofa',v:'Classic',t:8,r:800},{m:'Sofa',v:'Premium',t:8,r:1000}
+];
+const PRICES={
+ '72x30':[6565,4720,5149,5149,5578,6007,6007,6007,6866,6866,8411,8582,11157,12016,13732,8582,10299,12016,12874,8582,10299,12016,12874,19312,11157,12874,14591,17166,25749,38624,25749,34332,42916,10299,12874],
+ '72x36':[7649,5499,5999,5999,6499,6999,6999,6999,7999,7999,9799,9999,12999,13999,15999,9999,11999,13999,14999,9999,11999,13999,14999,22499,12999,14999,16999,19999,29999,44999,29999,39999,49999,11999,14999],
+ '72x42':[9192,6608,7209,7209,7810,8410,8410,8410,9612,9612,11775,12015,15620,16822,19225,12015,14419,16822,18024,12015,14419,16822,18024,27036,15620,18024,20427,24032,36049,54074,36049,48065,60082,14419,18024],
+ '72x48':[10199,7332,7999,7999,8665,9332,9332,9332,10665,10665,13065,13332,17332,18665,21332,13332,15999,18665,19999,13332,15999,18665,19999,29999,17332,19999,22665,26665,39999,59999,39999,53332,66665,15999,19999],
+ '72x60':[13131,9440,10298,10298,11157,12015,12015,12015,13732,13732,16822,17165,22315,24032,27465,17165,20598,24032,25748,17165,20598,24032,25748,38623,22315,25748,29182,34332,51498,77248,51498,68665,85832,20598,25748],
+ '72x66':[14444,10384,11328,11328,12272,13216,13216,13216,15105,15105,18504,18881,24546,26435,30211,18881,22658,26435,28323,18881,22658,26435,28323,42486,24546,28323,32100,37765,56648,84973,56648,75531,94415,22658,28323],
+ '72x72':[15298,10998,11998,11998,12998,13998,13998,13998,15998,15998,19598,19998,25998,27998,31998,19998,23998,27998,29998,19998,23998,27998,29998,44998,25998,29998,33998,39998,59998,89998,59998,79998,99998,23998,29998],
+ '75x30':[6839,4917,5364,5364,5811,6258,6258,6258,7152,7152,8761,8940,11622,12516,14305,8940,10728,12516,13411,8940,10728,12516,13411,20116,11622,13411,15199,17881,26822,40233,26822,35763,44704,10728,13411],
+ '75x36':[7968,5728,6249,6249,6770,7291,7291,7291,8332,8332,10207,10416,13541,14582,16666,10416,12499,14582,15624,10416,12499,14582,15624,23436,13541,15624,17707,20832,31249,46874,31249,41666,52082,12499,15624],
+ '75x42':[9575,6883,7509,7509,8135,8761,8761,8761,10013,10013,12266,12516,16271,17523,20027,12516,15020,17523,18775,12516,15020,17523,18775,28163,16271,18775,21278,25033,37551,56327,37551,50068,62586,15020,18775],
+ '75x48':[10624,7638,8332,8332,9026,9721,9721,9721,11110,11110,13610,13888,18054,19443,22221,13888,16665,19443,20832,13888,16665,19443,20832,31249,18054,20832,23610,27776,41665,62499,41665,55554,69443,16665,20832],
+ '75x60':[13678,9833,10727,10727,11621,12516,12516,12516,14304,14304,17523,17880,23245,25033,28609,17880,21457,25033,26821,17880,21457,25033,26821,40233,23245,26821,30398,35762,53644,80467,53644,71526,89408,21457,26821],
+ '75x66':[15046,10817,11800,11800,12784,13767,13767,13767,15734,15734,19275,19668,25569,27536,31470,19668,23602,27536,29503,19668,23602,27536,29503,44256,25569,29503,33437,39338,59008,88514,59008,78679,98349,23602,29503],
+ '75x72':[15936,11457,12499,12499,13541,14582,14582,14582,16666,16666,20416,20832,27082,29166,33332,20832,24999,29166,31249,20832,24999,29166,31249,46874,27082,31249,35416,41666,62499,93749,62499,83332,104166,24999,31249],
+ '78x30':[7113,5113,5578,5578,6043,6508,6508,6508,7438,7438,9112,9298,12087,13017,14877,9298,11157,13017,13947,9298,11157,13017,13947,20921,12087,13947,15807,18596,27895,41843,27895,37194,46492,11157,13947],
+ '78x36':[8286,5957,6499,6499,7041,7582,7582,7582,8666,8666,10616,10832,14082,15166,17332,10832,12999,15166,16249,10832,12999,15166,16249,24374,14082,16249,18416,21666,32499,48749,32499,43332,54166,12999,16249],
+ '78x42':[9958,7159,7810,7810,8460,9111,9111,9111,10413,10413,12756,13017,16922,18224,20828,13017,15620,18224,19526,13017,15620,18224,19526,29289,16922,19526,22129,26035,39053,58580,39053,52071,65089,15620,19526],
+ '78x48':[11049,7943,8665,8665,9387,10110,10110,10110,11554,11554,14154,14443,18776,20221,23110,14443,17332,20221,21665,14443,17332,20221,21665,32499,18776,21665,24554,28887,43332,64999,43332,57776,72221,17332,21665],
+ '78x60':[14225,10227,11156,11156,12086,13016,13016,13016,14876,14876,18223,18595,24175,26034,29754,18595,22315,26034,27894,18595,22315,26034,27894,41842,24175,27894,31613,37193,55790,83686,55790,74387,92984,22315,27894],
+ '78x66':[15648,11249,12272,12272,13295,14318,14318,14318,16364,16364,20046,20455,26592,28638,32729,20455,24546,28638,30683,20455,24546,28638,30683,46026,26592,30683,34775,40912,61369,92054,61369,81826,102283,24546,30683],
+ '78x72':[16572,11914,12997,12997,14080,15164,15164,15164,17330,17330,21230,21663,28163,30330,34663,21663,25997,30330,32497,21663,25997,30330,32497,48747,28163,32497,36830,43330,64997,97497,64997,86663,108330,25997,32497],
+ '84x36':[8924,6415,6999,6999,7582,8165,8165,8165,9332,9332,11432,11666,15166,16332,18665,11666,13999,16332,17499,11666,13999,16332,17499,26249,15166,17499,19832,23332,34999,52499,34999,46665,58332,13999,17499],
+ '84x60':[15319,11013,12015,12015,13016,14017,14017,14017,16020,16020,19625,20026,26034,28037,32042,20026,24031,28037,30040,20026,24031,28037,30040,45060,26034,30040,34045,40054,60081,90123,60081,80109,100137,24031,30040],
+ '84x72':[17848,12831,13998,13998,15164,16331,16331,16331,18664,18664,22864,23331,30331,32664,37331,23331,27998,32664,34998,23331,27998,32664,34998,52498,30331,34998,39664,46664,69998,104998,69998,93331,116664,27998,34998]
 };
+const PILLOWS=[
+ {re:/zero\s*gravity\s*[-–]?\s*natural/i,name:'Zero Gravity – Natural',cat:'Natural Latex',mrp:4999},
+ {re:/zero\s*gravity\s*contour/i,name:'Zero Gravity Contour',cat:'Latex',mrp:1999},
+ {re:/zero\s*gravity/i,name:'Zero Gravity',cat:'Latex',mrp:1999},
+ {re:/memo[-\s]*rest\s*contour\s*[-–]?\s*mini/i,name:'Memo-Rest Contour – Mini',cat:'Memory',mrp:1499},
+ {re:/memo[-\s]*rest\s*contour/i,name:'Memo-Rest Contour',cat:'Memory',mrp:1999},
+ {re:/memo[-\s]*rest\s*slim/i,name:'Memo-Rest Slim',cat:'Memory',mrp:1499},
+ {re:/memo[-\s]*rest/i,name:'Memo-Rest',cat:'Memory',mrp:1999},
+ {re:/memo[-\s]*touch/i,name:'Memo-Touch',cat:'Memory',mrp:1799},
+ {re:/cloud\s*pro/i,name:'Cloud Pro',cat:'Microfibre',mrp:1099},
+ {re:/cloud/i,name:'Cloud',cat:'Microfibre',mrp:899},
+ {re:/air\s*soft/i,name:'Air Soft',cat:'HR Foam',mrp:1499},
+ {re:/(mattress\s*)?protector/i,name:'Mattress Protector',cat:'Protector',mrp:1499}
+];
+const MODELS=['Ecolite','Signature','Magic','Maxa','Duro','Luma','Resto','Sova','Ultima','Riva','Sofa'];
 
-/* =========================================================================
-   DISTRACTORS — sub-nut holdings, closeness scales with recent accuracy.
-   ========================================================================= */
-function pickDistractors(distinct,c,k=3){
-  const m=distinct.length;
-  if(m<=k) return distinct.slice(0,k);
-  const target=(1-c)*(m-1);        // high closeness -> aim at the near-misses (index 0)
-  const spread=Math.max(1.2,m*0.18);
-  const w=distinct.map((_,i)=>Math.exp(-Math.abs(i-target)/spread));
-  const pool=[...distinct.keys()], chosen=[];
-  for(let n=0;n<k;n++){
-    let sum=0; for(const p of pool) sum+=w[p];
-    let x=Math.random()*sum, pi=0;
-    for(let t=0;t<pool.length;t++){ x-=w[pool[t]]; if(x<=0){pi=t;break;} pi=t; }
-    chosen.push(distinct[pool[pi]]); pool.splice(pi,1);
-  }
-  return chosen;
-}
-
-/* =========================================================================
-   REASONING — one-line "why it's the nuts".
-   ========================================================================= */
-function flushSuitOf(board){
-  const sc=[0,0,0,0]; for(const c of board) sc[c.suit]++;
-  for(let s=0;s<4;s++) if(sc[s]>=3) return s; return -1;
-}
-function rn(r){return RANKNAME[r];}
-function describeNuts(board,f,value){
-  const cat=value[0];
-  switch(cat){
-    case 8:
-      return value[1]===14 ? 'Royal flush — the absolute, unbeatable nuts.'
-        : `Straight flush, ${rn(value[1])}-high — nothing beats a straight flush here.`;
-    case 7:
-      return `Quad ${rn(value[1])}s — the paired board makes four-of-a-kind possible, and this is the top one (kicker ${rn(value[2])}).`;
-    case 6:
-      return `${rn(value[1])}s full of ${rn(value[2])}s — the best full house available.`;
-    case 5:{
-      const s=flushSuitOf(board);
-      return `Nut flush — ${rn(value[1])}-high ${s>=0?SUITNAME[s]:''}. No straight flush is possible and the board is unpaired, so no full house beats it.`;
+/* ===== Hindi / Hinglish normalisation ===== */
+const HINDI_DIGITS={'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
+const DIRECT_NUMBERS={
+  zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,
+  thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,
+  forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90,
+  ek:1,do:2,teen:3,char:4,chaar:4,panch:5,paanch:5,chhe:6,cheh:6,saat:7,aath:8,nau:9,das:10,
+  gyarah:11,barah:12,terah:13,chaudah:14,pandrah:15,solah:16,satrah:17,atharah:18,unnis:19,bees:20,
+  tees:30,chhattis:36,bayalis:42,adtalis:48,chauwan:54,saath:60,chhiyasath:66,bahattar:72,
+  pachhattar:75,athhattar:78,chaurasi:84,
+  तीस:30,चालीस:40,पचास:50,साठ:60,सत्तर:70,अस्सी:80,नब्बे:90,
+  शून्य:0,एक:1,दो:2,तीन:3,चार:4,पांच:5,पाँच:5,छह:6,छः:6,सात:7,आठ:8,नौ:9,दस:10,
+  ग्यारह:11,बारह:12,तेरह:13,चौदह:14,पंद्रह:15,सोलह:16,सत्रह:17,अठारह:18,उन्नीस:19,बीस:20,
+  इक्कीस:21,बाईस:22,तेईस:23,चौबीस:24,पच्चीस:25,छब्बीस:26,सत्ताईस:27,अट्ठाईस:28,उनतीस:29,
+  इकतीस:31,बत्तीस:32,तैंतीस:33,चौंतीस:34,पैंतीस:35,छत्तीस:36,सैंतीस:37,अड़तीस:38,उनतालीस:39,
+  इकतालीस:41,बयालीस:42,तैंतालीस:43,चवालीस:44,पैंतालीस:45,छियालीस:46,सैंतालीस:47,अड़तालीस:48,उनचास:49,
+  इक्यावन:51,बावन:52,तिरपन:53,चौवन:54,पचपन:55,छप्पन:56,सत्तावन:57,अट्ठावन:58,उनसठ:59,
+  इकसठ:61,बासठ:62,तिरसठ:63,चौंसठ:64,पैंसठ:65,छियासठ:66,सड़सठ:67,अड़सठ:68,उनहत्तर:69,
+  इकहत्तर:71,बहत्तर:72,तिहत्तर:73,चौहत्तर:74,पचहत्तर:75,छिहत्तर:76,सतहत्तर:77,अठहत्तर:78,उन्यासी:79,
+  इक्यासी:81,बयासी:82,तिरासी:83,चौरासी:84,पचासी:85,छियासी:86,सत्तासी:87,अट्ठासी:88,नवासी:89,
+  इक्यानवे:91,बानवे:92,तिरानवे:93,चौरानवे:94,पचानवे:95,छियानवे:96,सत्तानवे:97,अट्ठानवे:98,निन्यानवे:99,
+  सौ:100
+};
+const EN_TENS=new Set(['twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety']);
+const DEVA_MAP=[
+ // models
+ [/अल्ट[ीि]मा/gi,' ultima '],[/रेस्टो(ं)?/gi,' resto '],[/ल[ूु]मा/gi,' luma '],[/सोवा/gi,' sova '],
+ [/र[ीि]वा/gi,' riva '],[/ड[्यु]रो|ड्यूरो/gi,' duro '],[/मैक्सा|मेक्सा/gi,' maxa '],[/सिग्नेचर/gi,' signature '],
+ [/मैज[िी]क/gi,' magic '],[/इको\s*लाइट|इकोलाइट/gi,' ecolite '],
+ // variants
+ [/क्लास[िी]क/gi,' classic '],[/प्र[िी]म[िी]यम/gi,' premium '],[/लक्ज़री|लग्ज़री|लक्जरी|लक्ज़र[िी]/gi,' luxury '],
+ [/न[ेैे]चुरल|नैचुरल/gi,' natural '],
+ // pillows
+ [/ज़[िी]रो\s*ग्रैव[िी]टी|ज़ीरो\s*ग्रेविटी/gi,' zero gravity '],[/कंट[ूु]र/gi,' contour '],[/स्ल[िी]म/gi,' slim '],
+ [/मेमो\s*रेस्ट/gi,' memo-rest '],[/मेमो\s*टच/gi,' memo-touch '],[/क्लाउड\s*प्रो/gi,' cloud pro '],
+ [/क्लाउड/gi,' cloud '],[/एयर\s*सॉफ्ट|एयर\s*सॉफ़्ट/gi,' air soft '],[/मैट्रेस\s*प्रोटेक्टर|प्रोटेक्टर/gi,' mattress protector '],
+ [/मिनी/gi,' mini '],
+ // units / qty words
+ [/इंच/gi,'"'],[/नग|पीस|पीसेस/gi,' pcs '],[/मात्रा/gi,' qty '],[/बाय/gi,' x ']
+];
+function wordsToNumbers(s){
+  const words=s.split(/\s+/),out=[];
+  for(let i=0;i<words.length;i++){
+    const key=words[i].toLowerCase().replace(/[.,]/g,'');
+    if(EN_TENS.has(key)&&i+1<words.length){
+      const next=words[i+1].toLowerCase().replace(/[.,]/g,'');
+      if(DIRECT_NUMBERS[next]>0&&DIRECT_NUMBERS[next]<10){out.push(String(DIRECT_NUMBERS[key]+DIRECT_NUMBERS[next]));i++;continue;}
     }
-    case 4:
-      return `Nut straight, ${rn(value[1])}-high — the highest straight this board allows, and no flush is possible.`;
-    case 3:
-      return `Top set (three ${rn(value[1])}s) — no straight or flush is possible, so a set is the best hand.`;
-    case 2:
-      return `Top two pair — the best hand this (very dry) board allows.`;
-    default:
-      return `The best hand available on this board.`;
+    out.push(Object.prototype.hasOwnProperty.call(DIRECT_NUMBERS,key)?String(DIRECT_NUMBERS[key]):words[i]);
   }
+  return out.join(' ');
+}
+function normalize(line){
+  let s=line;
+  s=s.replace(/[०-९]/g,d=>HINDI_DIGITS[d]);      // Hindi digits -> 0-9
+  DEVA_MAP.forEach(([re,rep])=>{ s=s.replace(re,rep); });
+  s=s.replace(/\bby\b/gi,' x ');
+  s=wordsToNumbers(s).replace(/(\d)\s*(?:inches|inch|ins|in)\b/gi,'$1 '); // drop inch units, keep the number
+  return s.replace(/\s+/g,' ').trim();
 }
 
-/* =========================================================================
-   ROUND BUILDER
-   ========================================================================= */
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
-function chooseStreet(mode){
-  const map={flop:3,turn:4,river:5};
-  if(mode!=='all') return {n:map[mode],label:mode};
-  const pick=['flop','turn','river'][Math.random()*3|0];
-  return {n:map[pick],label:pick};
-}
-function displayKey(hole){return holeRanksDesc({hole,best5:[]}).join('')+'|'+hole.map(c=>c.id).sort().join(',');}
+/* ===== helpers ===== */
+function inr(n){n=Math.round(n);const s=String(n);if(s.length<=3)return s;const l=s.slice(-3);
+  let r=s.slice(0,-3).replace(/\B(?=(\d{2})+(?!\d))/g,',');return r+','+l;}
+function thick(t){return t+'"';}
+/* canonical, input-independent label: "Model Variant Size, Thickness Inches" */
+function skuLabel(r,unit){return r.model+' '+r.variant+' '+r.sizeLabel+', '+r.thickness+' '+unit;}
 
-function buildRound(tier,streetMode,closeness){
-  for(let attempt=0;attempt<9000;attempt++){
-    const st=chooseStreet(streetMode);
-    const board=shuffle(DECK.slice()).slice(0,st.n);
-    const f=classify(board);
-    if(!tierAccept(tier,f)) continue;
-    const sol=solveNuts(board);
-    if(sol.distinct.length<3) continue; // skip degenerate "play the board" boards
-    const distr=pickDistractors(sol.distinct,closeness);
-    const opts=[{hole:sol.correct.hole,value:sol.maxV,isCorrect:true}];
-    const seen=new Set([displayKey(sol.correct.hole)]);
-    for(const d of distr){
-      const key=displayKey(d.hole);
-      if(seen.has(key)) continue; seen.add(key);
-      opts.push({hole:d.hole,value:d.value,isCorrect:false});
+/* ===== parsing (operates on normalised text) ===== */
+function parseQty(line,size){
+  let work=line,m;
+  if(size)work=line.slice(0,size.index)+' '.repeat(size.len)+line.slice(size.index+size.len);
+  const patterns=[
+    /(?:^|\s)(?:x|×|\*|@|qty\.?|quantity)\s*(\d{1,3})(?:\s*(?:pcs?|nos?\.?|units?|pieces?|sets?))?(?=\s|$)/i,
+    /(?:^|\s)(\d{1,3})\s*(?:pcs?|nos?\.?|units?|pieces?|sets?)\b/i,
+    /(?:^|\s)(\d{1,3})\s*(?:x|×)(?=\s|$)/i
+  ];
+  for(const pattern of patterns)if((m=work.match(pattern)))break;
+  if(!m){
+    const suffix=size?line.slice(size.index+size.len):line;
+    const bare=size?suffix.match(/^\s*(\d{1,3})\s*$/):suffix.match(/(?:^|\s)(\d{1,3})\s*$/);
+    if(bare){
+      const start=size?size.index+size.len:bare.index;
+      m={0:suffix,index:start-(size?size.index+size.len:0),1:bare[1],bare:true,start};
     }
-    if(opts.length<4) continue;
-    shuffle(opts);
-    return {board,street:st,features:f,options:opts,
-            correctIndex:opts.findIndex(o=>o.isCorrect),
-            reason:describeNuts(board,f,sol.maxV),
-            catName:CATNAME[sol.maxV[0]]};
   }
-  return null;
+  if(!m)return{qty:1,work};
+  const qty=Math.max(1,+m[1]||1);
+  if(m.bare)work=line.slice(0,m.start)+' '.repeat(m[0].length)+line.slice(m.start+m[0].length);
+  else work=work.slice(0,m.index)+' '.repeat(m[0].length)+work.slice(m.index+m[0].length);
+  return{qty,work};
+}
+function parseSize(l){const m=l.match(/(\d{2,3}(?:\.\d+)?)\s*[x×*]\s*(\d{2,3}(?:\.\d+)?)/i);
+  if(!m)return null;return{a:parseFloat(m[1]),b:parseFloat(m[2]),index:m.index,len:m[0].length};}
+function stdKey(a,b){const k1=a+'x'+b,k2=b+'x'+a;if(PRICES[k1])return k1;if(PRICES[k2])return k2;return null;}
+function parseModel(l){l=l.toLowerCase();for(const m of MODELS)if(l.includes(m.toLowerCase()))return m;
+  if(/eco\s*lu|eco\s*lite|\beco\b/.test(l))return'Ecolite';return null;}
+function parseVariant(l){l=l.toLowerCase();let m;
+  if((m=l.match(/(?:r\s*-?\s*)?(1000|2000|3000)(?!\d)/)))return'R'+m[1];
+  if(/\bnatural\b|\bnat\b/.test(l))return'Natural';
+  if(/\bluxur/.test(l))return'Luxury';
+  if(/\bpremium\b|\bprem\b/.test(l))return'Premium';
+  if(/\bclassic\b|\bclass\b/.test(l))return'Classic';return null;}
+function parseThickness(w){const valid=[4,4.5,5,6,6.5,7,8,9,10];const re=/(\d{1,2}(?:\.\d)?)/g;
+  let mm;while((mm=re.exec(w))!==null){const f=parseFloat(mm[1]);if(valid.includes(f))return f;}return null;}
+
+function matchLine(raw){
+  const line=normalize(raw.trim());if(!line)return null;
+  const size=parseSize(line),quantity=parseQty(line,size),qty=quantity.qty;
+  let tWork=quantity.work;
+  if(size)tWork=tWork.slice(0,size.index)+'  '+tWork.slice(size.index+size.len);
+  const model=parseModel(line);
+  if(!model){
+    for(const p of PILLOWS)if(p.re.test(line))
+      return{kind:'pillow',src:raw.trim(),ok:true,name:p.name,cat:p.cat,qty,unit:p.mrp,total:p.mrp*qty};
+    return{kind:'none',src:raw.trim(),ok:false,msgKey:'noProduct'};
+  }
+  const variant=parseVariant(line);
+  // Riva variant codes (1000/2000/3000) must not be misread as a thickness (e.g. "10" out of "1000")
+  const thickness=parseThickness(tWork.replace(/(?:r\s*-?\s*)?(?:1000|2000|3000)(?!\d)/gi,' '));
+  let c=COLS.map((x,i)=>({...x,i})).filter(x=>x.m===model);
+  if(variant)c=c.filter(x=>x.v.toLowerCase()===variant.toLowerCase());
+  if(thickness!=null)c=c.filter(x=>x.t===thickness);
+  if(!size)return{kind:'mattress',src:raw.trim(),ok:false,msgKey:'noSize'};
+  if(c.length===0)return{kind:'mattress',src:raw.trim(),ok:false,msgKey:'noVariant',model,variant,thickness};
+  if(c.length>1){
+    const hasV=!!variant,hasT=thickness!=null;
+    if(hasT&&!hasV){const vs=[...new Set(c.map(x=>x.v))];
+      return{kind:'mattress',src:raw.trim(),ok:false,msgKey:'askVariant',model,thickDisp:thick(thickness),opts:vs.join(' / ')};}
+    if(hasV&&!hasT){const ts=[...new Set(c.map(x=>x.t))];
+      return{kind:'mattress',src:raw.trim(),ok:false,msgKey:'askThickness',model,variant,opts:ts.map(thick).join(' / ')};}
+    const opts=c.map(x=>x.v+' '+thick(x.t)).join(' · ');
+    return{kind:'mattress',src:raw.trim(),ok:false,msgKey:'ambiguous',opts};}
+  const col=c[0],key=stdKey(size.a,size.b);
+  if(key){const unit=PRICES[key][col.i];
+    return{kind:'mattress',src:raw.trim(),ok:true,model:col.m,variant:col.v,thickness:col.t,
+      sizeLabel:key.replace('x','×'),custom:false,qty,unit,total:unit*qty};}
+  const sqin=size.a*size.b,sqft=sqin/144,unit=Math.round(sqft*col.r);
+  return{kind:'mattress',src:raw.trim(),ok:true,model:col.m,variant:col.v,thickness:col.t,
+    sizeLabel:size.a+'×'+size.b,custom:true,rate:col.r,sqin,sqft,qty,unit,total:unit*qty};
 }
 
-/* =========================================================================
-   UI / STATE
-   ========================================================================= */
-const $=id=>document.getElementById(id);
-const state={tier:1,streetMode:'all',rounds:0,correct:0,streak:0,best:0,recent:[],missed:[],round:null,answered:false};
-const BASE_CLOSENESS={1:0.15,2:0.30,3:0.50,4:0.70,0:0.40};
-const DIFF_LABEL=c=>c<0.28?'Easy':c<0.5?'Medium':c<0.72?'Hard':'Nasty';
+/* ================= i18n ================= */
+const T={
+ en:{kicker:'From the house of LPPL · Price List 2026',
+   title:'SKU Price Summary',
+   sub:'Pick a model and variant, type the size and quantity, and add each product to your list for an instant priced summary with a grand total.',
+   yourList:'Build your list',clear:'Clear',
+   fModel:'Model',fThk:'Variant / Thickness',fSize:'Size',fQty:'Qty',add:'+ Add',clearAll:'Clear all',
+   selModel:'Select model…',selThk:'Select…',grpMattress:'Mattresses',grpPillow:'Pillows & Accessories',
+   fixedPrice:'Fixed price',sizePh:'e.g. 72x72',listEmpty:'No items yet — add products above.',
+   errModel:'Please choose a model.',errThk:'Please choose the variant / thickness.',
+   errSize:'Please enter a size, e.g. 72x72.',errSizeBad:'Size not understood. Use e.g. 72x72 or 75.5x67.5.',
+   summary:'Summary',copy:'Copy summary',foot:'FOAMICO · SKU Price Summary · MRP (incl. GST) · Confidential',
+   thPill:'Product',thQty:'Qty',thUnit:'Unit MRP',thTotal:'Line total',
+   grand:'Grand total (MRP, incl. GST)',item:'item',items:'items',priced:'priced',need:'need detail',
+   needTag:'Needs detail',pillowTag:'Pillow',custom:'custom',inches:'Inches',copied:'Copied ✓',
+   emptyStart:'Your priced summary will appear here.',emptyNone:'Add products above to see your priced summary.',
+   cleared:'Cleared.',
+   calc:(a,b,si,sf,r,u)=>`${a}×${b} = ${inr(si)} sq in ÷ 144 = ${sf.toFixed(2)} sq ft × ₹${inr(r)}/sq ft = ₹${inr(u)}`,
+   msg:{noProduct:'Product not recognised. Add a model name (Resto, Ultima…) or a pillow name (Cloud, Memo-Rest…).',
+     noSize:'Missing size. Add it as e.g. 75x60 (or 75.5x67.5 for a custom size).',
+     noVariant:'No matching variant / thickness for this model. Check the variant & thickness.',
+     ambiguous:o=>'Please specify variant &/or thickness. Options: '+o,
+     askVariant:(m,t,o)=>m+' '+t+' comes as '+o+' — please add the variant name.',
+     askThickness:(m,v,o)=>m+' '+v+' comes in '+o+' — please add the thickness.'},
+   egs:[['Standard mattress','Ultima Premium 72x60'],['Custom size','Resto Luxury 75.5x67.5'],
+        ['With quantity','Duro Premium 78x72 x3'],
+        ['Mixed list','Sova Luxury 75x60\nSignature Premium 5" 72x60 5\nCloud Pro x4\nMattress Protector x2']],
+   copyTitle:'FOAMICO — SKU Price Summary (MRP incl. GST)'},
+ hi:{kicker:'LPPL के घराने से · मूल्य सूची 2026',
+   title:'SKU मूल्य सारांश',
+   sub:'मॉडल और वेरिएंट चुनें, साइज़ और मात्रा लिखें, और हर प्रोडक्ट को सूची में जोड़ें — तुरंत कीमत-सहित सारांश और कुल जोड़ पाएँ।',
+   yourList:'अपनी सूची बनाएँ',clear:'साफ़ करें',
+   fModel:'मॉडल',fThk:'वेरिएंट / मोटाई',fSize:'साइज़',fQty:'मात्रा',add:'+ जोड़ें',clearAll:'सब हटाएँ',
+   selModel:'मॉडल चुनें…',selThk:'चुनें…',grpMattress:'गद्दे',grpPillow:'तकिए और सहायक',
+   fixedPrice:'निर्धारित मूल्य',sizePh:'जैसे 72x72',listEmpty:'अभी कोई आइटम नहीं — ऊपर से प्रोडक्ट जोड़ें।',
+   errModel:'कृपया मॉडल चुनें।',errThk:'कृपया वेरिएंट / मोटाई चुनें।',
+   errSize:'कृपया साइज़ डालें, जैसे 72x72।',errSizeBad:'साइज़ समझ नहीं आया। जैसे 72x72 या 75.5x67.5।',
+   summary:'सारांश',copy:'सारांश कॉपी करें',foot:'FOAMICO · SKU मूल्य सारांश · MRP (GST सहित) · गोपनीय',
+   thPill:'उत्पाद',thQty:'मात्रा',thUnit:'प्रति नग MRP',thTotal:'लाइन कुल',
+   grand:'कुल जोड़ (MRP, GST सहित)',item:'नग',items:'नग',priced:'की कीमत लगी',need:'में जानकारी चाहिए',
+   needTag:'जानकारी चाहिए',pillowTag:'तकिया',custom:'कस्टम',inches:'इंच',copied:'कॉपी हो गया ✓',
+   emptyStart:'आपका कीमत-सहित सारांश यहाँ दिखेगा।',emptyNone:'ऊपर प्रोडक्ट जोड़ें — यहाँ कीमत-सहित सारांश दिखेगा।',
+   cleared:'साफ़ हो गया।',
+   calc:(a,b,si,sf,r,u)=>`${a}×${b} = ${inr(si)} वर्ग इंच ÷ 144 = ${sf.toFixed(2)} वर्ग फुट × ₹${inr(r)}/वर्ग फुट = ₹${inr(u)}`,
+   msg:{noProduct:'प्रोडक्ट पहचान नहीं पाया। मॉडल नाम (रेस्टो, अल्टिमा…) या तकिया नाम (क्लाउड, मेमो-रेस्ट…) डालें।',
+     noSize:'साइज़ नहीं मिला। जैसे 75x60 लिखें (कस्टम के लिए 75.5x67.5)।',
+     noVariant:'इस मॉडल के लिए वेरिएंट / मोटाई मेल नहीं खाई। वेरिएंट और मोटाई जाँचें।',
+     ambiguous:o=>'कृपया वेरिएंट और/या मोटाई बताएँ। विकल्प: '+o,
+     askVariant:(m,t,o)=>m+' '+t+' में '+o+' दोनों आते हैं — कृपया वेरिएंट बताएँ।',
+     askThickness:(m,v,o)=>m+' '+v+' '+o+' दोनों में आता है — कृपया मोटाई बताएँ।'},
+   egs:[['सामान्य गद्दा','Ultima Premium 72x60'],['कस्टम साइज़','रेस्टो लक्ज़री 75.5x67.5'],
+        ['मात्रा के साथ','ड्यूरो प्रीमियम 78x72 x3'],
+        ['मिली-जुली सूची','सोवा लक्ज़री 75x60\nसिग्नेचर प्रीमियम 72x60 5\nक्लाउड प्रो x4\nमैट्रेस प्रोटेक्टर x2']],
+   copyTitle:'FOAMICO — SKU मूल्य सारांश (MRP, GST सहित)'}
+};
+let LANG='en';
 
-function closeness(){
-  const base=BASE_CLOSENESS[state.tier];
-  const acc=state.recent.length>=4 ? state.recent.reduce((a,b)=>a+b,0)/state.recent.length : 0.5;
-  return Math.max(0.08,Math.min(0.96, base+(acc-0.5)*0.6));
+/* ================= render ================= */
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+/* ===== builder state ===== */
+let items=[];
+function err(msg){document.getElementById('bErr').textContent=msg||'';}
+function clearErr(){document.getElementById('bErr').textContent='';}
+
+function buildModelSelect(){
+  const t=T[LANG],sel=document.getElementById('bModel'),prev=sel.value;
+  sel.innerHTML='';
+  const ph=document.createElement('option');ph.value='';ph.textContent=t.selModel;ph.disabled=true;ph.selected=true;sel.appendChild(ph);
+  const g1=document.createElement('optgroup');g1.label=t.grpMattress;
+  MODELS.forEach(m=>{const o=document.createElement('option');o.value='m:'+m;o.textContent=m;g1.appendChild(o);});
+  sel.appendChild(g1);
+  const g2=document.createElement('optgroup');g2.label=t.grpPillow;
+  PILLOWS.forEach((p,i)=>{const o=document.createElement('option');o.value='p:'+i;o.textContent=p.name;g2.appendChild(o);});
+  sel.appendChild(g2);
+  if(prev)sel.value=prev;
 }
-function cardHTML(c,size){
-  const red=(c.suit===1||c.suit===2);
-  return `<span class="card ${size} ${red?'red':'blk'}"><span class="r">${RANKNAME[c.rank]}</span><span class="s">${SUITSYM[c.suit]}</span></span>`;
+function buildThkSelect(modelName,keep){
+  const t=T[LANG],sel=document.getElementById('bThk');sel.innerHTML='';
+  const combos=COLS.map((x,i)=>({...x,i})).filter(x=>x.m===modelName);
+  if(combos.length!==1){const ph=document.createElement('option');ph.value='';ph.textContent=t.selThk;ph.disabled=true;ph.selected=true;sel.appendChild(ph);}
+  combos.forEach(c=>{const o=document.createElement('option');o.value=String(c.i);o.textContent=c.v+', '+c.t+' '+t.inches;sel.appendChild(o);});
+  if(keep)sel.value=keep;
 }
-function holeHTML(hole,size){
-  const s=[...hole].sort((a,b)=>b.rank-a.rank);
-  return s.map(c=>cardHTML(c,size)).join('');
+function onModelChange(){
+  clearErr();
+  const v=document.getElementById('bModel').value;
+  const thk=document.getElementById('bThk'),size=document.getElementById('bSize');
+  if(v.slice(0,2)==='m:'){buildThkSelect(v.slice(2));thk.disabled=false;size.disabled=false;}
+  else if(v.slice(0,2)==='p:'){thk.innerHTML='<option>'+T[LANG].fixedPrice+'</option>';thk.disabled=true;size.disabled=true;size.value='';}
+  else{thk.innerHTML='';thk.disabled=true;size.disabled=true;}
 }
 
-function nextRound(){
-  const c=closeness();
-  const r=buildRound(state.tier,state.streetMode,c);
-  if(!r){ $('nextHint').textContent='Could not deal a board for this setting — try another difficulty.'; return; }
-  state.round=r; state.answered=false;
-  renderRound();
-  $('sDiff').textContent=DIFF_LABEL(c);
+function addItem(){
+  clearErr();
+  const t=T[LANG];
+  const mv=document.getElementById('bModel').value;
+  const qty=Math.max(1,Math.floor(+document.getElementById('bQty').value||1));
+  if(!mv)return err(t.errModel);
+  let item;
+  if(mv.slice(0,2)==='p:'){
+    const p=PILLOWS[+mv.slice(2)];
+    item={kind:'pillow',ok:true,name:p.name,cat:p.cat,qty,unit:p.mrp,total:p.mrp*qty};
+  }else{
+    const ci=document.getElementById('bThk').value;
+    if(ci==='')return err(t.errThk);
+    const sizeStr=document.getElementById('bSize').value.trim();
+    if(!sizeStr)return err(t.errSize);
+    const size=parseSize(normalize(sizeStr));
+    if(!size)return err(t.errSizeBad);
+    const col=COLS[+ci],key=stdKey(size.a,size.b);
+    if(key){const unit=PRICES[key][+ci];
+      item={kind:'mattress',ok:true,model:col.m,variant:col.v,thickness:col.t,sizeLabel:key.replace('x','×'),custom:false,qty,unit,total:unit*qty};}
+    else{const sqin=size.a*size.b,sqft=sqin/144,unit=Math.round(sqft*col.r);
+      item={kind:'mattress',ok:true,model:col.m,variant:col.v,thickness:col.t,sizeLabel:size.a+'×'+size.b,custom:true,rate:col.r,sqin,sqft,qty,unit,total:unit*qty};}
+  }
+  items.push(item);renderList();draw(items);
+  document.getElementById('bSize').value='';document.getElementById('bQty').value='1';
+  const sz=document.getElementById('bSize');if(!sz.disabled)sz.focus();
 }
-function renderRound(){
-  const r=state.round;
-  $('streetLbl').textContent=r.street.label;
-  $('board').innerHTML=r.board.map(c=>cardHTML(c,'big')).join('');
-  $('opts').innerHTML=r.options.map((o,i)=>
-    `<div class="opt" data-i="${i}"><div class="key">${i+1}</div><div class="cards">${holeHTML(o.hole,'sm')}</div></div>`).join('');
-  $('opts').querySelectorAll('.opt').forEach(el=>el.onclick=()=>answer(+el.dataset.i));
-  $('feedback').className='feedback'; $('feedback').innerHTML='';
-  $('nextHint').textContent='';
+function renderList(){
+  const t=T[LANG],w=document.getElementById('listWrap');
+  if(!items.length){w.innerHTML='<div class="li-empty">'+t.listEmpty+'</div>';return;}
+  w.innerHTML=items.map((r,idx)=>{
+    const label=r.kind==='pillow'?r.name+' ('+r.cat+')':skuLabel(r,t.inches)+(r.custom?' · '+t.custom:'');
+    return '<div class="li-item"><div class="li-main"><span class="q">'+r.qty+'×</span>'+esc(label)+'</div>'+
+           '<button class="li-rm" data-idx="'+idx+'" aria-label="remove">✕</button></div>';
+  }).join('');
+  w.querySelectorAll('.li-rm').forEach(b=>b.addEventListener('click',()=>{items.splice(+b.dataset.idx,1);renderList();draw(items);}));
 }
-function answer(i){
-  if(state.answered) return;
-  state.answered=true;
-  const r=state.round, ok=(i===r.correctIndex);
-  state.rounds++; if(ok) state.correct++;
-  state.streak=ok?state.streak+1:0; state.best=Math.max(state.best,state.streak);
-  state.recent.push(ok?1:0); if(state.recent.length>12) state.recent.shift();
-  if(!ok) state.missed.push({board:r.board,street:r.street.label,
-      nutHole:r.options[r.correctIndex].hole,nutVal:r.options[r.correctIndex].value,
-      catName:r.catName,reason:r.reason});
-  // paint options
-  $('opts').querySelectorAll('.opt').forEach(el=>{
-    const idx=+el.dataset.i; el.classList.add('dis');
-    if(idx===r.correctIndex) el.classList.add('correct');
-    else if(idx===i) el.classList.add('wrong');
+function applyLang(){
+  const t=T[LANG];
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(t[k])el.textContent=t[k];});
+  document.getElementById('en').classList.toggle('on',LANG==='en');
+  document.getElementById('hi').classList.toggle('on',LANG==='hi');
+  document.getElementById('bSize').placeholder=t.sizePh;
+  const pm=document.getElementById('bModel').value,pt=document.getElementById('bThk').value;
+  buildModelSelect();
+  if(pm){document.getElementById('bModel').value=pm;
+    if(pm.slice(0,2)==='m:'){buildThkSelect(pm.slice(2),pt);document.getElementById('bThk').disabled=false;document.getElementById('bSize').disabled=false;}
+    else if(pm.slice(0,2)==='p:'){document.getElementById('bThk').innerHTML='<option>'+t.fixedPrice+'</option>';document.getElementById('bThk').disabled=true;document.getElementById('bSize').disabled=true;}}
+  renderList();draw(items);
+}
+
+function draw(rows){
+  const t=T[LANG],out=document.getElementById('output'),copyBtn=document.getElementById('copy');
+  if(!rows||rows.length===0){out.innerHTML='<div class="empty">'+t.emptyNone+'</div>';copyBtn.classList.add('hidden');return;}
+  let grand=0,items=0,flagged=0,body='';
+  rows.forEach(r=>{
+    if(r.ok){
+      grand+=r.total;items+=r.qty;let interp;
+      if(r.kind==='pillow'){
+        interp='<span class="skuline"><strong>'+esc(r.name)+'</strong> ('+esc(r.cat)+')</span>';
+      }else{
+        interp='<span class="skuline"><strong>'+esc(r.model)+'</strong> '+
+               esc(r.variant+' '+r.sizeLabel+', '+r.thickness+' '+t.inches)+'</span>'+
+               (r.custom?'<span class="tag custom">'+t.custom+'</span>':'');
+      }
+      const note=r.custom?'<div class="note">'+esc(t.calc(r.sizeLabel.split('×')[0],r.sizeLabel.split('×')[1],r.sqin,r.sqft,r.rate,r.unit))+'</div>':'';
+      body+='<tr><td><div class="tags">'+interp+'</div>'+note+'</td>'+
+            '<td class="num">'+r.qty+'</td><td class="num">₹'+inr(r.unit)+'</td>'+
+            '<td class="num price-strong">₹'+inr(r.total)+'</td></tr>';
+    }else{
+      flagged++;const M=t.msg;let msg;
+      if(r.msgKey==='ambiguous')msg=M.ambiguous(r.opts);
+      else if(r.msgKey==='askVariant')msg=M.askVariant(r.model,r.thickDisp,r.opts);
+      else if(r.msgKey==='askThickness')msg=M.askThickness(r.model,r.variant,r.opts);
+      else msg=M[r.msgKey];
+      body+='<tr class="flag"><td><div class="src">'+esc(r.src)+'</div><div class="tags"><span class="flagtag">'+
+            t.needTag+'</span></div><div class="asknote">'+esc(msg)+'</div></td>'+
+            '<td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>';
+    }
   });
-  const nut=r.options[r.correctIndex].hole;
-  const fb=$('feedback'); fb.className='feedback show '+(ok?'ok':'no');
-  fb.innerHTML=`<div class="fb-head">${ok?'✓ Correct':'✗ Not the nuts'} `+
-    `<span class="pill">${r.catName}</span>`+
-    `<span style="margin-left:auto;display:flex;gap:6px;align-items:center;color:var(--dim);font-size:12px">nuts: ${holeHTML(nut,'sm')}</span></div>`+
-    `<div class="fb-reason">${r.reason}</div>`;
-  $('nextHint').innerHTML='Press <kbd>Enter</kbd> or click for the next board';
-  renderStats();
-}
-function renderStats(){
-  $('sRounds').textContent=state.rounds;
-  $('sAcc').textContent=state.rounds?Math.round(100*state.correct/state.rounds)+'%':'—';
-  $('sStreak').textContent=state.streak;
-  $('sBest').textContent=state.best;
-}
-function showSummary(){
-  $('sumLine').innerHTML=`Played <b>${state.rounds}</b> rounds · `+
-    `<b>${state.rounds?Math.round(100*state.correct/state.rounds):0}%</b> accuracy · `+
-    `best streak <b>${state.best}</b>`;
-  const miss=[...state.missed].sort((a,b)=>compareValue(b.nutVal,a.nutVal)).slice(0,6);
-  $('sumMiss').innerHTML = miss.length
-    ? '<div style="color:var(--dim);font-size:12px;margin-bottom:6px">Hardest hands you missed</div>'+
-      miss.map(m=>`<div class="miss"><span class="lab">${m.street}</span>`+
-        `<span>${m.board.map(c=>cardHTML(c,'sm')).join('')}</span>`+
-        `<span style="margin-left:auto;text-align:right"><span class="pill">${m.catName}</span><br>`+
-        `<span style="color:var(--dim);font-size:11px">nuts ${holeHTML(m.nutHole,'sm')}</span></span></div>`).join('')
-    : '<div style="color:var(--dim)">No missed hands — clean session. 🔥</div>';
-  $('overlay').classList.add('show');
+  let html='<table><thead><tr><th>'+t.thPill+'</th><th class="num">'+t.thQty+'</th><th class="num">'+
+    t.thUnit+'</th><th class="num">'+t.thTotal+'</th></tr></thead><tbody>'+body+'</tbody></table>';
+  html+='<div class="total-bar"><div><div class="lbl">'+t.grand+'</div><div class="total-meta">'+
+    items+' '+(items!==1?t.items:t.item)+' '+t.priced+(flagged?' · '+flagged+' '+t.need:'')+
+    '</div></div><div class="amt"><span class="k">₹</span>'+inr(grand)+'</div></div>';
+  out.innerHTML=html;copyBtn.classList.remove('hidden');
+  // plain text copy
+  let txt=t.copyTitle+'\n\n';
+  rows.forEach(r=>{if(r.ok){const d=r.kind==='pillow'?r.name+' ('+r.cat+')':
+      skuLabel(r,t.inches)+(r.custom?' ['+t.custom+']':'');
+    txt+=`${r.qty} × ${d}  @ ₹${inr(r.unit)}  = ₹${inr(r.total)}\n`;}
+    else{const M=t.msg;let msg;
+      if(r.msgKey==='ambiguous')msg=M.ambiguous(r.opts);
+      else if(r.msgKey==='askVariant')msg=M.askVariant(r.model,r.thickDisp,r.opts);
+      else if(r.msgKey==='askThickness')msg=M.askThickness(r.model,r.variant,r.opts);
+      else msg=M[r.msgKey];
+      txt+=`[${t.needTag}] ${r.src} — ${msg}\n`;}});
+  txt+=`\n${t.grand}: ₹${inr(grand)}  (${items} ${items!==1?t.items:t.item})`;
+  copyBtn.dataset.txt=txt;
 }
 
-/* --- settings wiring --- */
-function setTier(t){ state.tier=t; $('tierSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.t===t));
-  $('tierHint').textContent=TIER_HINT[t]; nextRound(); }
-function setStreet(s){ state.streetMode=s; $('streetSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===s)); nextRound(); }
-$('tierSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setTier(+b.dataset.t));
-$('streetSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>setStreet(b.dataset.s));
-$('endBtn').onclick=showSummary;
-$('closeSum').onclick=()=>$('overlay').classList.remove('show');
-$('newSession').onclick=()=>{Object.assign(state,{rounds:0,correct:0,streak:0,best:0,recent:[],missed:[]});renderStats();$('overlay').classList.remove('show');nextRound();};
-
-document.addEventListener('keydown',e=>{
-  if($('overlay').classList.contains('show')) return;
-  if(!state.answered && e.key>='1' && e.key<='4'){ const i=+e.key-1; if(state.round&&i<state.round.options.length) answer(i); }
-  else if(state.answered && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); nextRound(); }
+/* ================= wire ================= */
+document.getElementById('bModel').addEventListener('change',onModelChange);
+document.getElementById('bAdd').addEventListener('click',addItem);
+document.getElementById('bSize').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addItem();}});
+document.getElementById('bQty').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addItem();}});
+document.getElementById('clear').addEventListener('click',()=>{
+  items=[];renderList();draw(items);clearErr();
+  document.getElementById('bSize').value='';document.getElementById('bQty').value='1';
 });
-$('table').addEventListener('click',e=>{ if(state.answered && !e.target.closest('.opt')) nextRound(); });
+document.getElementById('copy').addEventListener('click',e=>{const b=e.currentTarget;
+  navigator.clipboard.writeText(b.dataset.txt||'').then(()=>{b.textContent=T[LANG].copied;
+    setTimeout(()=>b.textContent=T[LANG].copy,1400);});});
+function changeLanguage(lang){LANG=lang;applyLang();}
+document.getElementById('en').addEventListener('click',()=>changeLanguage('en'));
+document.getElementById('hi').addEventListener('click',()=>changeLanguage('hi'));
 
-/* =========================================================================
-   UNIT TESTS — known boards with known correct nuts.
-   ========================================================================= */
-function runTests(){
-  const T=[];
-  const nut=arr=>solveNuts(parseCards(arr)).maxV;
-  T.push(['Royal flush on monotone AKQ spades', ()=>{const v=nut(['As','Ks','Qs']);return v[0]===8&&v[1]===14;}]);
-  T.push(['Dry flop K72r → nuts = top set (KK)', ()=>{const v=nut(['Kd','7c','2s']);return v[0]===3&&v[1]===13;}]);
-  T.push(['Paired flop 99x → nuts = quad nines', ()=>{const v=nut(['9h','9d','2c']);return v[0]===7&&v[1]===9;}]);
-  T.push(['SF board 6-T spades → nuts = Q-high SF', ()=>{const v=nut(['6s','7s','8s','9s','Ts']);return v[0]===8&&v[1]===12;}]);
-  T.push(['Monotone AKx hearts → nuts = A-high flush', ()=>{const v=nut(['Ah','Kh','5h']);return v[0]===5&&v[1]===14;}]);
-  T.push(['Connected 987 (no flush) → nuts = J-high straight', ()=>{const v=nut(['9c','8d','7h','2s']);return v[0]===4&&v[1]===11;}]);
-  T.push(['Double-paired KKQQ river → nuts = quad kings', ()=>{const v=nut(['Ks','Kd','Qs','Qd','2c']);return v[0]===7&&v[1]===13;}]);
-  T.push(['Wheel A2345 < 6-high straight', ()=>{
-    const w=evaluate5(parseCards(['As','2d','3c','4h','5s']));
-    const s=evaluate5(parseCards(['6s','2d','3c','4h','5h']));
-    return w[0]===4&&w[1]===5&&compareValue(w,s)<0;}]);
-  T.push(['4-flush board (no SF) → nuts = A-high flush', ()=>{
-    const v=nut(['Ah','Kh','8h','3h','2d']);return v[0]===5&&v[1]===14;}]);
-  const results=T.map(([name,fn])=>{let pass=false,err=null;try{pass=fn();}catch(e){err=e.message;}return{name,pass,err};});
-  const passed=results.filter(r=>r.pass).length;
-  const badge=$('testBadge');
-  badge.textContent=`self-tests: ${passed}/${results.length} ${passed===results.length?'✓':'✗'}`;
-  badge.className='badge '+(passed===results.length?'pass':'fail');
-  badge.onclick=()=>{const d=$('testDetail');d.style.display=d.style.display==='block'?'none':'block';};
-  $('testDetail').innerHTML=results.map(r=>
-    `<div style="color:${r.pass?'var(--good)':'var(--bad)'}">${r.pass?'✓':'✗'} ${r.name}${r.err?' — '+r.err:''}</div>`).join('');
-  return passed===results.length;
-}
-
-/* --- boot --- */
-runTests();
-setTier(1);
-renderStats();
+applyLang();
 </script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function (err) {
+        console.warn("SW registration failed:", err);
+      });
+    });
+  }
+</script>
+</body>
+</html>
